@@ -58,8 +58,6 @@ void World::Load()
 	this->put_block(-5, 1, 4);
 	this->put_block(-5, 1, 5);
 
-
-
 	this->skyBox = SkyBox();
 }
 
