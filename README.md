@@ -6,6 +6,22 @@ For the sake of the correctness in README, Chinese will be used in the following
 # 做什么
 ## 我的世界
 
+## Requirements
+
+需要依赖有: glut, glew, glm, SOIL
+- glm 用于矩阵等数学运算
+- SOIL 用于读取各种格式的图片(显示纹理)
+
+现在项目中应该已经这些库应该已经有了，在项目的 include 与 libs 目录下。
+
+我的开发环境是VS2019, 项目配置如下:
+- 使用 Debug x86 进行项目配置和编译
+- 项目-属性-平台选 WIN32
+- 检查VC++目录-包含目录, 中是否有 $(ProjectDir)include
+- 检查VC++目录-库目录, 中是否有 $(ProjectDir)libs
+
+
+
 ## To-Do list
 * 基础要求
 - [ ] 建模:基于OpenGL/WebGL，具有基本体素(立方体、球、圆柱、圆锥、多 面棱柱、多面棱台)的建模表达能力

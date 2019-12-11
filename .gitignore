@@ -4,8 +4,6 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # ignore include and libs
-src/MyCraft/MyCraft/include/*
-src/MyCraft/MyCraft/libs/*
 
 # User-specific files
 *.rsuser
