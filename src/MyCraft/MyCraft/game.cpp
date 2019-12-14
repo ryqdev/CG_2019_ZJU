@@ -58,9 +58,8 @@ void Game::Init()
 
 void Game::ProcessInput(GLfloat dt)
 {
-	dt = 0.01;
-
 	camera->doMovement(this->Keys, world, dt);
+	camera->doZoom(this->Keys, dt);
 
 	/*
 		// 根据用户输入控制照相机的位置
@@ -92,7 +91,7 @@ void Game::Render()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(65.0f, (float)Width / Height, 0.125f, 100.0f);
+	gluPerspective(camera->getZooom(), (float)Width / Height, 0.125f, 100.0f);
 
 	// 设置模型矩阵
 	glMatrixMode(GL_MODELVIEW);

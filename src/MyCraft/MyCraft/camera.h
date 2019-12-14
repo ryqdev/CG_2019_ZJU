@@ -18,7 +18,6 @@ enum Camera_Movement {
 	LEFT,
 	RIGHT,
 	JUMP,
-	IDLE
 };
 
 // Default camera values
@@ -26,7 +25,7 @@ const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
 const GLfloat SPEED = 2.0f;
 const GLfloat SENSITIVTY = 0.5f;
-const GLfloat ZOOM = 45.0f;
+const GLfloat ZOOM = 65.0f;
 
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
@@ -87,6 +86,7 @@ public:
 	}
 
 	void doMovement(GLboolean Keys[], World* world, GLfloat deltaTime);
+	void doZoom(GLboolean Keys[], GLfloat deltaTime);
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime);
@@ -96,6 +96,7 @@ public:
 
 	void camera_mouse_callback(int xpos, int ypos);
 
+	GLfloat getZooom();
 
 private:
 

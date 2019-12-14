@@ -18,6 +18,11 @@ void Camera::updateCameraVectors()
 	this->Up = glm::normalize(glm::cross(this->Right, this->Front));
 }
 
+GLfloat Camera::getZooom()
+{
+	return this->Zoom;
+}
+
 void Camera::ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboolean constrainPitch)
 {
 	xoffset *= this->MouseSensitivity;
@@ -77,7 +82,16 @@ void Camera::doMovement(GLboolean Keys[], World* world, GLfloat deltaTime)
 		speedY = 0;
 		isJump = false;
 	}
+}
 
+void Camera::doZoom(GLboolean Keys[], GLfloat deltaTime)
+{
+	if (Keys['q']) {
+		this->Zoom = 35.0f;
+	}
+	else {
+		this->Zoom = 65.0f;
+	}
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
@@ -101,6 +115,9 @@ void Camera::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
 	}
 	Position.y = tmp.y;		// 保证键盘控制不能改变 y 
 }
+
+
+
 
 bool Camera::doCollisions(World* world)
 {
