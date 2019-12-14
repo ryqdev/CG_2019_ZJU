@@ -28,6 +28,7 @@ For the sake of the correctness in README, Chinese will be used in the following
 
 
 **物体渲染**
+
 游戏渲染，在 Game类中的 `Render` 方法中，调用 `world->render();` 渲染整个世界。
 
 - `world` 类, 方块, 天空盒等所有在世界中的对象都在该类中创建。世界的大小为 WIDTH, 方块的坐标 x, y, z 均为整数。(这一部分有点乱。。)

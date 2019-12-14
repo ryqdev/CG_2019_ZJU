@@ -7,9 +7,9 @@
 #include "game.h"
 
 // The Width of the screen
-const GLuint SCREEN_WIDTH = 1000;
+const GLuint SCREEN_WIDTH = 800;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 800;
+const GLuint SCREEN_HEIGHT = 600;
 
 Game MineCraft(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -48,7 +48,7 @@ void getFPS()
 		timebase = time;
 		frame = 0;
 	}
-
+	// cout << buffer << endl;
 	char* c;
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);  // Ñ¡ÔñÍ¶Ó°¾ØÕó

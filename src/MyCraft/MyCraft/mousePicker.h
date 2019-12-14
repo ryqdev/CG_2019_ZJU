@@ -9,6 +9,26 @@
 https://www.youtube.com/watch?v=DLKN0jExRIM
 */
 
+struct IntersectPoint
+{
+	float x;
+	float y;
+	float z;
+	bool isIntersect;
+	float distance;
+	glm::vec3 dir;
+
+	IntersectPoint(float x, float y, float z, bool isIntersect, float distance, glm::vec3 dir) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->isIntersect = isIntersect;
+		this->distance = distance;
+		this->dir = dir;
+	}
+
+};
+
 class MousePicker
 {
 private:
@@ -41,4 +61,9 @@ public:
 
 	// 测试鼠标射线
 	void render_ray();
+
+	// 判断当前射线与立方体那个面相交
+	// 输入射线方向，相机位置，单位立方体中心坐标
+	// 返回
+	glm::vec3 Intersect(glm::vec3 ray, glm::vec3 camera, int x, int y, int z);
 };

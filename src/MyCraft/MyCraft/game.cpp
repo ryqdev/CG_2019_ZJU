@@ -120,6 +120,11 @@ void Game::Update(GLfloat dt)
 	// camera->updateCamera(this->world, dt);
 }
 
+// 先放这儿, 保存上一次选中的方块位置，为了能够不选中的时候消除线框
+static int block_last_x = 0;	
+static int block_last_y = 0;
+static int block_last_z = 0;
+
 void Game::MouseMoveCallback(int xpos, int ypos)
 {
 	this->camera->camera_mouse_callback(xpos, ypos);
@@ -131,9 +136,7 @@ void Game::MouseMoveCallback(int xpos, int ypos)
 	// ---------------------------------------------------------
 	// TODO: 测试射线拾取
 	int distance = 8;			// 能够得着多远
-	static int block_last_x = 0;	// 保存上一次选中的方块位置，为了能够不选中的时候消除线框
-	static int block_last_y = 0;
-	static int block_last_z = 0;
+
 	glm::vec3 ray = this->mousePicker->getCurrentRay();
 	int x, y, z;
 	for (int u = 0; u < distance; u++) {
@@ -162,15 +165,26 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
 			// 下面是放置方块功能
+			// 有了当前选中的方块，判断射线先与方块的哪一个面相交
+			// cout << block_last_x << " " << block_last_y << " " << block_last_z << endl;
 			glm::vec3 ray = this->mousePicker->getCurrentRay();
-			int x, y, z;	// 前方距离为 1 的位置
-			int distance = 2;
-			x = roundf(ray.x * distance + camera->Position.x);
-			y = roundf(ray.y * distance + camera->Position.y);
-			z = roundf(ray.z * distance + camera->Position.z);
+			glm::vec3 pos = glm::vec3(block_last_x, block_last_y, block_last_z);
+			// 获取相交的面
+			glm::vec3 p = this->mousePicker->Intersect(ray, camera->Position, block_last_x, block_last_y, block_last_z);
+			if (p == glm::vec3(0, 0, 0)) {
+				return;
+			}
+			pos = pos + p;
 
-			if (!world->get_map(x, y, z)) {	// 这里没有方块
-				world->put_block(x, y, z);
+			if (!world->get_map(pos.x, pos.y, pos.z)) {	// 当前位置没有方块
+				if (glm::abs(camera->Position.x - pos.x) < 1
+					&& glm::abs(camera->Position.z - pos.z) < 1
+					&& pos.y + 0.5 > camera->Position.y - 1.5
+					&& pos.y - 0.5 < camera->Position.y + 0.5) {	// 要放的方块不能与人碰撞
+					return;
+				}
+				// cout << "放在了:" << pos.x << " " << pos.y << " " << pos.z << endl;
+				world->put_block(pos.x, pos.y, pos.z);
 			}
 		}
 	}

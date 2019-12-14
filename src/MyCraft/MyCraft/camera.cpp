@@ -52,7 +52,7 @@ void Camera::doMovement(GLboolean Keys[], World* world, GLfloat deltaTime)
 		this->Position -= this->Right * velocity;
 	if (Keys['d'])
 		this->Position += this->Right * velocity;
-	if (Keys[' '] && !isJump) {
+	if (Keys[' '] && !isJump && !flying) {
 		isJump = true;
 		speedY = 1.7;
 	}
