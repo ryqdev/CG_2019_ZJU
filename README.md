@@ -46,7 +46,10 @@ For the sake of the correctness in README, Chinese will be used in the following
 - `carame` 类: 相机漫游，跳跃，飞行与重力，碰撞检测(依赖于world的接口)等功能
 
 
-
+## 2019年12月14日更新
+- 对MyCraft工程的.h文件和.cpp文件归档整理，以后大家就在那两个文件夹里添加类
+- 导入Opencv库，用以增加截屏功能，[opencv导入教程](https://blog.csdn.net/weixin_43085694/article/details/103537012)
+- 添加了screenshot.h和screenshot.cpp两个文件，在main函数的Key函数中添加了'P'键截屏，并且保存在指定文档中
 
 
 
