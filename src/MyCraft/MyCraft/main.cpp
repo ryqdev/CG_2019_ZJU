@@ -1,10 +1,14 @@
-// ÈÃ fopen ²»»á±¨´í,»òÕßÏò C/C++, Ô¤´¦ÀíÆ÷£¬Ô¤´¦ÀíÆ÷¶¨ÒåÖĞ Ìí¼Ó _CRT_SECURE_NO_WARNINGS
+// è®© fopen ä¸ä¼šæŠ¥é”™,æˆ–è€…å‘ C/C++, é¢„å¤„ç†å™¨ï¼Œé¢„å¤„ç†å™¨å®šä¹‰ä¸­ æ·»åŠ  _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 
 #define GLEW_STATIC
 #include "GL/glew.h"
 
 #include "game.h"
+#include "screenshot.h"
+//time
+time_t rawtime;
+struct tm* ptminfo;
 
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 1000;
@@ -25,14 +29,14 @@ void reshape(int w, int h)
 
 void timer(int extra)
 {
-	// ´¦ÀíÓÃ»§µÄÊäÈë
+	// å¤„ç†ç”¨æˆ·çš„è¾“å…¥
 	MineCraft.ProcessInput(0.01);
-	// ¸üĞÂÓÎÏ·
+	// æ›´æ–°æ¸¸æˆ
 	MineCraft.Update(0.01);
 
-	// ÖØ»æ»­Ãæ
+	// é‡ç»˜ç”»é¢
 	glutPostRedisplay();
-	// Ã¿ 5ms µ÷ÓÃÒ»´Î¸Ãº¯Êı£¬ Ö÷ÒªÓÃÓÚ¿ØÖÆÖ¡ÂÊfps
+	// æ¯ 5ms è°ƒç”¨ä¸€æ¬¡è¯¥å‡½æ•°ï¼Œ ä¸»è¦ç”¨äºæ§åˆ¶å¸§ç‡fps
 	glutTimerFunc(5, timer, 0);
 }
 
@@ -51,31 +55,31 @@ void getFPS()
 
 	char* c;
 	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);  // Ñ¡ÔñÍ¶Ó°¾ØÕó
-	glPushMatrix();               // ±£´æÔ­¾ØÕó
-	glLoadIdentity();             // ×°Èëµ¥Î»¾ØÕó
-	glOrtho(0, 480, 0, 480, -1, 1);    // Î»ÖÃÕıÍ¶Ó°
-	glMatrixMode(GL_MODELVIEW);   // Ñ¡ÔñModelview¾ØÕó
-	glPushMatrix();               // ±£´æÔ­¾ØÕó
-	glLoadIdentity();             // ×°Èëµ¥Î»¾ØÕó
+	glMatrixMode(GL_PROJECTION);  // é€‰æ‹©æŠ•å½±çŸ©é˜µ
+	glPushMatrix();               // ä¿å­˜åŸçŸ©é˜µ
+	glLoadIdentity();             // è£…å…¥å•ä½çŸ©é˜µ
+	glOrtho(0, 480, 0, 480, -1, 1);    // ä½ç½®æ­£æŠ•å½±
+	glMatrixMode(GL_MODELVIEW);   // é€‰æ‹©ModelviewçŸ©é˜µ
+	glPushMatrix();               // ä¿å­˜åŸçŸ©é˜µ
+	glLoadIdentity();             // è£…å…¥å•ä½çŸ©é˜µ
 	glRasterPos2f(10, 10);
 	for (c = buffer; *c != '\0'; c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
-	glMatrixMode(GL_PROJECTION);  // Ñ¡ÔñÍ¶Ó°¾ØÕó
-	glPopMatrix();                // ÖØÖÃÎªÔ­±£´æ¾ØÕó
-	glMatrixMode(GL_MODELVIEW);   // Ñ¡ÔñModelview¾ØÕó
-	glPopMatrix();                // ÖØÖÃÎªÔ­±£´æ¾ØÕó
+	glMatrixMode(GL_PROJECTION);  // é€‰æ‹©æŠ•å½±çŸ©é˜µ
+	glPopMatrix();                // é‡ç½®ä¸ºåŸä¿å­˜çŸ©é˜µ
+	glMatrixMode(GL_MODELVIEW);   // é€‰æ‹©ModelviewçŸ©é˜µ
+	glPopMatrix();                // é‡ç½®ä¸ºåŸä¿å­˜çŸ©é˜µ
 	glEnable(GL_DEPTH_TEST);
 }
 
 void display(void)
 {
-	// äÖÈ¾ÓÎÏ·»­Ãæ
+	// æ¸²æŸ“æ¸¸æˆç”»é¢
 	MineCraft.Render();
-	// ÏÔÊ¾ FPS ĞÅÏ¢
+	// æ˜¾ç¤º FPS ä¿¡æ¯
 	getFPS();
-	// ½»»»»º³åÇø
+	// äº¤æ¢ç¼“å†²åŒº
 	glutSwapBuffers();
 }
 
@@ -89,10 +93,33 @@ void keyDown(unsigned char key, int x, int y)
 	{
 		MineCraft.camera->flying = !MineCraft.camera->flying;
 	}
-	// ¼ÇÂ¼ÏàÓ¦°´¼ü°´ÏÂµÄ×´Ì¬
+	// è®°å½•ç›¸åº”æŒ‰é”®æŒ‰ä¸‹çš„çŠ¶æ€
 	if (key >= 0 && key < 1024)
 	{
 		MineCraft.Keys[key] = GL_TRUE;
+	}
+
+
+
+
+
+
+	if (key == 'p' || key == 'P')
+	{
+		screenshot s;
+		GLint viewPort[4] = { 0 };
+		glGetIntegerv(GL_VIEWPORT, viewPort);
+		glReadPixels(viewPort[0], viewPort[1], viewPort[2], viewPort[3], GL_RGB, GL_UNSIGNED_BYTE, s.colorArr);
+		cout << "image saved!!!"<< endl;
+		string year = to_string(ptminfo->tm_year + 1900);
+		string month = to_string(ptminfo->tm_mon + 1);
+		string day = to_string( ptminfo->tm_mday);
+		string hour = to_string( ptminfo->tm_hour);
+		string minute = to_string(ptminfo->tm_min);
+		string second = to_string(ptminfo->tm_sec);
+		//string d = "C:\\Users\\35191\\Desktop\\CG_2019_ZJU-master\\screenshot\\img" + year +"-" + month + "-" + day +"-" + hour +":" + minute +":" + second+ ".jpg";
+		string d = "C:\\Users\\35191\\Desktop\\CG_2019_ZJU-master\\screenshot\\img" + second + ".jpg";
+		s.save_img(s.colorArr, d);
 	}
 }
 
@@ -107,10 +134,10 @@ void keyUp(unsigned char key, int x, int y)
 void init()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);	// setting the clear color, seems like background
-	glShadeModel(GL_SMOOTH);	// ×ÅÉ«Æ÷Ä£Ê½
-	glEnable(GL_TEXTURE_2D);	// ´ò¿ªÎÆÀíÓ³Éä
+	glShadeModel(GL_SMOOTH);	// ç€è‰²å™¨æ¨¡å¼
+	glEnable(GL_TEXTURE_2D);	// æ‰“å¼€çº¹ç†æ˜ å°„
 
-	// ³õÊ¼»¯ÓÎÏ·
+	// åˆå§‹åŒ–æ¸¸æˆ
 	MineCraft.Init();
 
 	timer(0);
@@ -128,6 +155,10 @@ void  mouse_click_callback(int button, int state, int x, int y)
 
 int main(int argc, char* argv[])
 {
+	// get time
+	time(&rawtime);
+	ptminfo = localtime(&rawtime);
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -141,7 +172,7 @@ int main(int argc, char* argv[])
 
 	init();
 
-	// µ±´°¿ÚÄÚÈİ»æÖÆ£¬´°¿Ú´óĞ¡¸Ä±ä£¬´°¿ÚÖØ»æÊ±£¬»áµ÷ÓÃdisplayº¯Êı
+	// å½“çª—å£å†…å®¹ç»˜åˆ¶ï¼Œçª—å£å¤§å°æ”¹å˜ï¼Œçª—å£é‡ç»˜æ—¶ï¼Œä¼šè°ƒç”¨displayå‡½æ•°
 	glutDisplayFunc(display);
 
 	glutReshapeFunc(reshape);
