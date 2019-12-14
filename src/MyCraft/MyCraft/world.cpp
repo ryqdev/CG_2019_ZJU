@@ -25,6 +25,12 @@ void World::set_map(int x, int y, int z)
 	map[x + WIDTH / 2][y + WIDTH / 2][z + WIDTH / 2] = 1;
 }
 
+void World::reset_map(int x, int y, int z)
+{
+	map[x + WIDTH / 2][y + WIDTH / 2][z + WIDTH / 2] = 0;
+}
+
+
 
 World::~World()
 {
@@ -103,6 +109,20 @@ void World::put_block(int x, int y, int z)
 	// 注意映射方式, id 是否会溢出
 	int id = get_block_id(x, y, z);
 	blockMap.insert(std::pair<int, Block>(id, block));
+}
+
+void World::clear_block(int x, int y, int z)
+{
+	reset_map(x, y, z);
+
+	int id = get_block_id(x, y, z);
+	std::unordered_map<int, Block>::iterator it;
+
+	it = this->blockMap.find(id);
+	if (it != this->blockMap.end())
+	{
+		this->blockMap.erase(it);
+	}
 }
 
 void World::init()

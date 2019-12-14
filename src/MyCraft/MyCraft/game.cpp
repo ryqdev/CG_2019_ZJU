@@ -176,14 +176,21 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 			pos = pos + p;
 
 			if (!world->get_map(pos.x, pos.y, pos.z)) {	// 当前位置没有方块
-				if (glm::abs(camera->Position.x - pos.x) < 1
-					&& glm::abs(camera->Position.z - pos.z) < 1
-					&& pos.y + 0.5 > camera->Position.y - 1.5
-					&& pos.y - 0.5 < camera->Position.y + 0.5) {	// 要放的方块不能与人碰撞
+				if (glm::abs(camera->Position.x - pos.x) < 0.6
+					&& glm::abs(camera->Position.z - pos.z) < 0.6
+					&& pos.y + 0.3 > camera->Position.y - 1.3
+					&& pos.y - 0.3 < camera->Position.y + 0.3) {	// 要放的方块不能与人碰撞
 					return;
 				}
 				// cout << "放在了:" << pos.x << " " << pos.y << " " << pos.z << endl;
 				world->put_block(pos.x, pos.y, pos.z);
+			}
+		}
+	}
+	else if (button == GLUT_RIGHT_BUTTON) {		// 消除方块
+		if (state == GLUT_DOWN) {
+			if (world->get_map(block_last_x, block_last_y, block_last_z)) {
+				world->clear_block(block_last_x, block_last_y, block_last_z);
 			}
 		}
 	}

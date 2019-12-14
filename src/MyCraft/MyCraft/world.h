@@ -20,6 +20,8 @@ private:
 
 	void set_map(int x, int y, int z);
 
+	void reset_map(int x, int y, int z);
+
 	char map[WIDTH][WIDTH][WIDTH];
 
 	// 要渲染的方块
@@ -34,6 +36,8 @@ public:
 
 	// 放一个 Block 在指定坐标中
 	void put_block(int x, int y, int z);
+
+	void clear_block(int x, int y, int z);
 
 	// 拾取该block， 会将 BLock 的isSelect值设为true
 	void pick_block(int x, int y, int z);

@@ -59,14 +59,14 @@ void Camera::doMovement(GLboolean Keys[], World* world, GLfloat deltaTime)
 		this->Position += this->Right * velocity;
 	if (Keys[' '] && !isJump && !flying) {
 		isJump = true;
-		speedY = 1.7;
+		speedY = 1.8;
 	}
 
 	if (!flying) 
 	{
 		// 自由落体
 		Position.y = tmp.y;		// 保证键盘控制不能改变 y 
-		speedY = speedY - 0.017;
+		speedY = speedY - 0.016;
 	}
 
 	// 下落速度最大值
