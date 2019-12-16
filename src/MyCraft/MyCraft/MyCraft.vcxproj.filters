@@ -9,19 +9,19 @@
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="world.cpp" />
-    <ClCompile Include="cubeRender.cpp" />
     <ClCompile Include="mousePicker.cpp" />
+    <ClCompile Include="screenshot.cpp" />
+    <ClCompile Include="cubeRender.cpp" />
+    <ClCompile Include="block.cpp">
+      <Filter>blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="goldBlock.cpp">
+      <Filter>blocks</Filter>
+    </ClCompile>
     <ClCompile Include="grassBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
     <ClCompile Include="iceBlock.cpp">
-      <Filter>blocks</Filter>
-    </ClCompile>
-    <ClCompile Include="block.cpp">
-      <Filter>blocks</Filter>
-    </ClCompile>
-    <ClCompile Include="screenshot.cpp" />
-    <ClCompile Include="goldBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
   </ItemGroup>
@@ -33,31 +33,31 @@
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="world.h" />
-    <ClInclude Include="cubeRender.h" />
     <ClInclude Include="mousePicker.h" />
+    <ClInclude Include="screenshot.h" />
+    <ClInclude Include="cubeRender.h" />
+    <ClInclude Include="blockFactory.h">
+      <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="blockType.h">
+      <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="goldBlock.h">
+      <Filter>blocks</Filter>
+    </ClInclude>
     <ClInclude Include="grassBlock.h">
       <Filter>blocks</Filter>
     </ClInclude>
     <ClInclude Include="iceblock.h">
       <Filter>blocks</Filter>
     </ClInclude>
-    <ClInclude Include="block.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="blockFactory.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="blockType.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="screenshot.h" />
-    <ClInclude Include="goldBlock.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blocks">
-      <UniqueIdentifier>{924aee1d-346b-4dd6-8dc6-9842454c9307}</UniqueIdentifier>
+      <UniqueIdentifier>{2216c378-b24c-429c-882f-3f6f89e02439}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

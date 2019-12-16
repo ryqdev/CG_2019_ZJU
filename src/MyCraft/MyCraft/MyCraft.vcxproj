@@ -129,12 +129,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="block.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="cubeRender.cpp" />
-    <ClCompile Include="game.cpp" />
     <ClCompile Include="goldBlock.cpp" />
     <ClCompile Include="grassBlock.cpp" />
     <ClCompile Include="iceBlock.cpp" />
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cubeRender.cpp" />
+    <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mousePicker.cpp" />
     <ClCompile Include="resource_manager.cpp" />
@@ -148,12 +148,12 @@
     <ClInclude Include="block.h" />
     <ClInclude Include="blockFactory.h" />
     <ClInclude Include="blockType.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="cubeRender.h" />
-    <ClInclude Include="game.h" />
     <ClInclude Include="goldBlock.h" />
     <ClInclude Include="grassBlock.h" />
     <ClInclude Include="iceblock.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="cubeRender.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="mousePicker.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="screenshot.h" />

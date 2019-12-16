@@ -52,11 +52,11 @@ For the sake of the correctness in README, Chinese will be used in the following
 - 导入Opencv库，用以增加截屏功能，[opencv导入教程](https://blog.csdn.net/weixin_43085694/article/details/103537012)
 - 添加了screenshot.h和screenshot.cpp两个文件，在main函数的Key函数中添加了'P'键截屏，并且保存在指定文档中
 
-## 2019年12月16更新
+## 2019年12月16日更新
 - 修复飞行时空格键问题。修改方块的创建逻辑，能够在远距离创建方块。
 - 增加鼠标右键消除方块功能，K 键进行视角的 Zoom 功能
 - 增加创建不同种类的方块功能，**Q 键切换想要放置的方块**。目前有 草，冰块，金块三种。若需要增加更多的类型。添加相应的`xxBlock.h` 与 `xxBlock.cpp`, 并修改 `blockType.h` 与 `blockFactory.h` 即可
-- 截屏功能修改为使用 SOIL 库保存, 文件保存在项目的 `screenshot` 文件夹中
+- 截屏功能修改为使用 SOIL 库保存, 图片保存在项目的 `screenshot` 文件夹中
 
 
 ## To-Do list
