@@ -3,6 +3,7 @@
 #include "grassBlock.h"
 #include "iceblock.h"
 #include "blockType.h"
+#include "goldBlock.h"
 
 
 static class BlockFactory
@@ -17,6 +18,9 @@ public:
 			break;
 		case ICE:
 			return new IceBlock(x, y, z);
+			break;
+		case GOLD:
+			return new GoldBlcok(x, y, z);
 			break;
 		default:
 			break;

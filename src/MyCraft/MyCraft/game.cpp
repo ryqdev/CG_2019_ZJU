@@ -51,6 +51,7 @@ void Game::Init()
 	ResourceManager::LoadTexture("textures/grass_block_up.png", false, "grass_block_up");
 	// Ice
 	ResourceManager::LoadTexture("textures/ice.png", false, "ice_block");
+	ResourceManager::LoadTexture("textures/gold_ore.png", false, "gold_ore");
 
 	ResourceManager::LoadShader("shaders/sky_vertex.glsl", "shaders/sky_fragment.glsl", nullptr, "shader_skybox");
 
