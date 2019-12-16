@@ -86,7 +86,7 @@ void Camera::doMovement(GLboolean Keys[], World* world, GLfloat deltaTime)
 
 void Camera::doZoom(GLboolean Keys[], GLfloat deltaTime)
 {
-	if (Keys['q']) {
+	if (Keys['p']) {
 		this->Zoom = 35.0f;
 	}
 	else {
@@ -115,8 +115,6 @@ void Camera::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
 	}
 	Position.y = tmp.y;		// 保证键盘控制不能改变 y 
 }
-
-
 
 
 bool Camera::doCollisions(World* world)

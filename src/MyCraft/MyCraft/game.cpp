@@ -12,6 +12,8 @@ Game::Game(GLuint width, GLuint height)
 
 	mousePicker = nullptr;
 
+	currentType = GRASS;
+
 	for (int i = 0; i < 1024; i++)
 	{
 		Keys[i] = false;
@@ -27,24 +29,29 @@ Game::~Game()
 		delete world;
 }
 
+void Game::nextBlcokType()
+{
+	this->currentType = (BlockType)((this->currentType + 1) % BlockTypeNum);
+	cout << this->currentType << endl;
+}
+
+
 void Game::Init()
 {
 	// 创建一个照相机
 	this->camera = new Camera(glm::vec3(3.0f, 8.0f, 3.0f));
 
-
-	// 暂时先放在这里设置投影矩阵，因为要传给 mousePicker 做计算
-
-
-	// float projectionMatrix[16];
-	// glGetFloatv(GL_PROJECTION_MATRIX, projectionMatrix);
 	// 创建鼠标拾取器
 	// this->mousePicker = new MousePicker(this->camera, glm::make_mat4(projectionMatrix));
 	this->mousePicker = new MousePicker(this->camera, glm::perspective(65.0f, (float)Width / Height, 0.125f, 100.0f));
 
 	// 载入游戏所需的着色器与纹理资源
-	ResourceManager::LoadTexture("textures/grass_block_side.png", false, "tex_side");
-	ResourceManager::LoadTexture("textures/Test.png", false, "tex_up");
+	// GrassBlock
+	ResourceManager::LoadTexture("textures/grass_block_side.png", false, "grass_block_side");
+	ResourceManager::LoadTexture("textures/grass_block_up.png", false, "grass_block_up");
+	// Ice
+	ResourceManager::LoadTexture("textures/ice.png", false, "ice_block");
+
 	ResourceManager::LoadShader("shaders/sky_vertex.glsl", "shaders/sky_fragment.glsl", nullptr, "shader_skybox");
 
 	// 新建一个 world 对象
@@ -60,23 +67,6 @@ void Game::ProcessInput(GLfloat dt)
 {
 	camera->doMovement(this->Keys, world, dt);
 	camera->doZoom(this->Keys, dt);
-
-	/*
-		// 根据用户输入控制照相机的位置
-	if (Keys['w'])
-		camera->ProcessKeyboard(FORWARD, this->world ,dt);
-	if (Keys['s'])
-		camera->ProcessKeyboard(BACKWARD, this->world, dt);
-	if (Keys['a'])
-		camera->ProcessKeyboard(LEFT, this->world, dt);
-	if (Keys['d'])
-		camera->ProcessKeyboard(RIGHT, this->world, dt);
-	if (Keys[' '])
-		camera->ProcessKeyboard(JUMP, this->world, dt);
-	camera->ProcessKeyboard(IDLE, this->world, dt);
-	
-	*/
-
 }
 
 
@@ -103,8 +93,6 @@ void Game::Render()
 	// 渲染世界
 	world->render();
 
-	// glutWireCube(10);
-
 	// 测试鼠标射线
 	this->mousePicker->render_ray();
 
@@ -115,8 +103,6 @@ void Game::Render()
 
 void Game::Update(GLfloat dt)
 {
-	// 会判断是否碰撞更新y坐标的位置，会判断是否跳跃
-	// camera->updateCamera(this->world, dt);
 }
 
 // 先放这儿, 保存上一次选中的方块位置，为了能够不选中的时候消除线框
@@ -183,7 +169,7 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 					return;
 				}
 				// cout << "放在了:" << pos.x << " " << pos.y << " " << pos.z << endl;
-				world->put_block(pos.x, pos.y, pos.z);
+				world->put_block(pos.x, pos.y, pos.z, currentType);
 			}
 		}
 	}

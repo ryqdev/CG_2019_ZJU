@@ -5,10 +5,6 @@
 #include "GL/glew.h"
 
 #include "game.h"
-#include "screenshot.h"
-//time
-time_t rawtime;
-struct tm* ptminfo;
 
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 800;
@@ -24,6 +20,8 @@ void reshape(int w, int h)
 {
 	screenWidth = w;
 	screenHeight = h;
+	MineCraft.Width = w;
+	MineCraft.Height = h;
 	glViewport(0, 0, w, h);
 }
 
@@ -93,33 +91,14 @@ void keyDown(unsigned char key, int x, int y)
 	{
 		MineCraft.camera->flying = !MineCraft.camera->flying;
 	}
+	if (key == 'q')	// Q 键切换要绘制的方块
+	{
+		MineCraft.nextBlcokType();
+	}
 	// 记录相应按键按下的状态
 	if (key >= 0 && key < 1024)
 	{
 		MineCraft.Keys[key] = GL_TRUE;
-	}
-
-
-
-
-
-
-	if (key == 'p' || key == 'P')
-	{
-		screenshot s;
-		GLint viewPort[4] = { 0 };
-		glGetIntegerv(GL_VIEWPORT, viewPort);
-		glReadPixels(viewPort[0], viewPort[1], viewPort[2], viewPort[3], GL_RGB, GL_UNSIGNED_BYTE, s.colorArr);
-		cout << "image saved!!!"<< endl;
-		string year = to_string(ptminfo->tm_year + 1900);
-		string month = to_string(ptminfo->tm_mon + 1);
-		string day = to_string( ptminfo->tm_mday);
-		string hour = to_string( ptminfo->tm_hour);
-		string minute = to_string(ptminfo->tm_min);
-		string second = to_string(ptminfo->tm_sec);
-		//string d = "C:\\Users\\35191\\Desktop\\CG_2019_ZJU-master\\screenshot\\img" + year +"-" + month + "-" + day +"-" + hour +":" + minute +":" + second+ ".jpg";
-		string d = "C:\\Users\\35191\\Desktop\\CG_2019_ZJU-master\\screenshot\\img" + second + ".jpg";
-		s.save_img(s.colorArr, d);
 	}
 }
 
@@ -143,7 +122,7 @@ void init()
 	timer(0);
 }
 
-void mouse_callback(int xpos, int ypos)
+void mouse_move_callback(int xpos, int ypos)
 {
 	MineCraft.MouseMoveCallback(xpos, ypos);
 }
@@ -155,10 +134,6 @@ void  mouse_click_callback(int button, int state, int x, int y)
 
 int main(int argc, char* argv[])
 {
-	// get time
-	time(&rawtime);
-	ptminfo = localtime(&rawtime);
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -178,7 +153,7 @@ int main(int argc, char* argv[])
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
-	glutPassiveMotionFunc(mouse_callback);
+	glutPassiveMotionFunc(mouse_move_callback);
 	glutMouseFunc(mouse_click_callback);
 	glutMainLoop();
 

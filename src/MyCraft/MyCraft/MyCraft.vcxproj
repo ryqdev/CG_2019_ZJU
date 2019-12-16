@@ -132,6 +132,8 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cubeRender.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="grassBlock.cpp" />
+    <ClCompile Include="iceBlock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mousePicker.cpp" />
     <ClCompile Include="resource_manager.cpp" />
@@ -142,19 +144,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
+    <ClInclude Include="blockFactory.h" />
+    <ClInclude Include="blockType.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cubeRender.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="grassBlock.h" />
+    <ClInclude Include="iceblock.h" />
     <ClInclude Include="mousePicker.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="skyBox.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="world.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\sky_fragment.glsl" />
-    <None Include="shaders\sky_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

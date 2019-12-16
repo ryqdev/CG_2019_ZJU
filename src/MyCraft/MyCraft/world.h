@@ -4,6 +4,7 @@
 #include "block.h"
 #include "skyBox.h"
 #include "cubeRender.h"
+#include "blockFactory.h"
 
 #include <vector>
 #include<unordered_map>
@@ -27,7 +28,7 @@ private:
 	// 要渲染的方块
 	// std::vector<Block> blocks;
 	// 尝试用 map 存储
-	std::unordered_map<int, Block> blockMap;
+	std::unordered_map<int, Block*> blockMap;
 
 	// 根据世界坐标，计算对应的 map 中的键值
 	int get_block_id(int x, int y, int z);
@@ -35,7 +36,7 @@ private:
 public:
 
 	// 放一个 Block 在指定坐标中
-	void put_block(int x, int y, int z);
+	void put_block(int x, int y, int z, BlockType type);
 
 	void clear_block(int x, int y, int z);
 

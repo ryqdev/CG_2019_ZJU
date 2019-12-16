@@ -5,7 +5,7 @@
 
 class Block
 {
-private:
+protected:
 	bool isSelected;
 
 
@@ -17,8 +17,8 @@ public:
 
 	Block();
 
-	// 绘制方块
-	void Draw(CubeRender* Render);
+	// 绘制方块，虚函数，具体绘制由派生类决定
+	virtual void Draw(CubeRender* Render) = 0;
 
 	void select_block();
 	void unselect_block();

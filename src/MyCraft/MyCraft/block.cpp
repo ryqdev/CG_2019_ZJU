@@ -18,19 +18,6 @@ Block::Block()
 }
 
 
-void Block::Draw(CubeRender* Render)
-{
-	Render->drawCube(position[0], position[1], position[2], 
-		ResourceManager::GetTexture("tex_up"),
-		ResourceManager::GetTexture("tex_side"),
-		ResourceManager::GetTexture("tex_up"));
-	
-	if (isSelected) 
-	{
-		Render->drawWireCube(position[0], position[1], position[2]);
-	}
-}
-
 void Block::select_block()
 {
 	isSelected = true;

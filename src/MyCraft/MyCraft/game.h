@@ -14,6 +14,9 @@ enum GameState {
 
 class Game
 {
+private:
+	BlockType currentType;	// 当前鼠标放置的方块类型
+
 public:
 	// 游戏状态
 	GameState  State;
@@ -26,6 +29,8 @@ public:
 	MousePicker* mousePicker;
 
 	World* world;
+
+	void nextBlcokType();
 
 	// Constructor/Destructor
 	Game(GLuint width, GLuint height);
