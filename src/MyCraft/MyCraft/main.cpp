@@ -5,6 +5,11 @@
 #include "GL/glew.h"
 
 #include "game.h"
+#include "screenshot.h"
+
+//time
+time_t rawtime;
+struct tm* ptminfo;
 
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 800;
@@ -95,10 +100,15 @@ void keyDown(unsigned char key, int x, int y)
 	{
 		MineCraft.nextBlcokType();
 	}
-	// 记录相应按键按下的状态
+	// 记录相应按键按下的状态，其中 K 键 Zoom，WASD移动相机
 	if (key >= 0 && key < 1024)
 	{
 		MineCraft.Keys[key] = GL_TRUE;
+	}
+
+	if (key == 'p' || key == 'P')
+	{
+		Screenshot::save_img(ptminfo);
 	}
 }
 
@@ -134,6 +144,9 @@ void  mouse_click_callback(int button, int state, int x, int y)
 
 int main(int argc, char* argv[])
 {
+	time(&rawtime);
+	ptminfo = localtime(&rawtime);
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);

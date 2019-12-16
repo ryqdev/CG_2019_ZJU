@@ -20,6 +20,7 @@
     <ClCompile Include="block.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
+    <ClCompile Include="screenshot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="blockType.h">
       <Filter>blocks</Filter>
     </ClInclude>
+    <ClInclude Include="screenshot.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blocks">

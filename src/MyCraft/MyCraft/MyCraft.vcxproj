@@ -137,6 +137,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mousePicker.cpp" />
     <ClCompile Include="resource_manager.cpp" />
+    <ClCompile Include="screenshot.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="skyBox.cpp" />
     <ClCompile Include="texture.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="iceblock.h" />
     <ClInclude Include="mousePicker.h" />
     <ClInclude Include="resource_manager.h" />
+    <ClInclude Include="screenshot.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="skyBox.h" />
     <ClInclude Include="texture.h" />

@@ -86,7 +86,7 @@ void Camera::doMovement(GLboolean Keys[], World* world, GLfloat deltaTime)
 
 void Camera::doZoom(GLboolean Keys[], GLfloat deltaTime)
 {
-	if (Keys['p']) {
+	if (Keys['k']) {
 		this->Zoom = 35.0f;
 	}
 	else {
