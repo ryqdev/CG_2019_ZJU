@@ -5,6 +5,7 @@
 #include "skyBox.h"
 #include "cubeRender.h"
 #include "blockFactory.h"
+#include "chunk/chunk.h"
 
 #include <vector>
 #include<unordered_map>
@@ -18,20 +19,10 @@ private:
 
 	// 天空盒对象
 	SkyBox skyBox;
+	// 要渲染的区块
+	std::vector<Chunk*> chunks;
 
-	void set_map(int x, int y, int z);
-
-	void reset_map(int x, int y, int z);
-
-	char map[WIDTH][WIDTH][WIDTH];
-
-	// 要渲染的方块
-	// std::vector<Block> blocks;
-	// 尝试用 map 存储
-	std::unordered_map<int, Block*> blockMap;
-
-	// 根据世界坐标，计算对应的 map 中的键值
-	int get_block_id(int x, int y, int z);
+	int chunked(int x);
 
 public:
 
@@ -46,6 +37,9 @@ public:
 	void unpick_block(int x, int y, int z);
 	
 	char get_map(int x, int y, int z);
+
+	// 用chunk坐标寻找chunk
+	Chunk *findChunk(int x, int z);
 
 	World();
 	~World();

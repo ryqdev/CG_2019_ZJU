@@ -24,6 +24,8 @@
     <ClCompile Include="iceBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
+    <ClCompile Include="chunk\chunk.cpp" />
+    <ClCompile Include="chunk\perlinNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -54,6 +56,8 @@
     <ClInclude Include="iceblock.h">
       <Filter>blocks</Filter>
     </ClInclude>
+    <ClInclude Include="chunk\chunk.h" />
+    <ClInclude Include="chunk\perlinNoise.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blocks">

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -129,6 +129,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="chunk\chunk.cpp" />
+    <ClCompile Include="chunk\perlinNoise.cpp" />
     <ClCompile Include="goldBlock.cpp" />
     <ClCompile Include="grassBlock.cpp" />
     <ClCompile Include="iceBlock.cpp" />
@@ -148,6 +150,8 @@
     <ClInclude Include="block.h" />
     <ClInclude Include="blockFactory.h" />
     <ClInclude Include="blockType.h" />
+    <ClInclude Include="chunk\chunk.h" />
+    <ClInclude Include="chunk\perlinNoise.h" />
     <ClInclude Include="goldBlock.h" />
     <ClInclude Include="grassBlock.h" />
     <ClInclude Include="iceblock.h" />
