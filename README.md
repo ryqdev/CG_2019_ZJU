@@ -58,6 +58,10 @@ For the sake of the correctness in README, Chinese will be used in the following
 - 增加创建不同种类的方块功能，**Q 键切换想要放置的方块**。目前有 草，冰块，金块三种。若需要增加更多的类型。添加相应的`xxBlock.h` 与 `xxBlock.cpp`, 并修改 `blockType.h` 与 `blockFactory.h` 即可
 - 截屏功能修改为使用 SOIL 库保存, 图片保存在项目的 `screenshot` 文件夹中
 
+## 2019年12月17日更新
+
+* 以16 * 16 * 128的大小划分区块，使用柏林噪声生成地形，修改原本绘制与修改地形的代码。
+
 
 ## To-Do list
 * 基础要求
