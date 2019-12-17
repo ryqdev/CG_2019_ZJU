@@ -24,6 +24,9 @@ private:
 
 	int chunked(int x);
 
+	//世界物体材质
+	float mAmbientMaterial[4], mDiffuseMaterial[4], mSpecularMaterial[4];
+
 public:
 
 	// 放一个 Block 在指定坐标中
@@ -54,4 +57,9 @@ public:
 
 	// 渲染整个世界
 	void render();
+
+	//设置世界物体反射材质
+	void SetAmbientMaterial(float r, float g, float b, float a);
+	void SetDiffuseMaterial(float r, float g, float b, float a);
+	void SetSpecularMaterial(float r, float g, float b, float a);
 };
