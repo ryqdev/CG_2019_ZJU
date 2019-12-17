@@ -38,6 +38,8 @@ public:
 	
 	char get_map(int x, int y, int z);
 
+	int highest(int x, int z);
+
 	// ÓÃchunk×ø±êÑ°ÕÒchunk
 	Chunk *findChunk(int x, int z);
 

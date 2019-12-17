@@ -38,13 +38,6 @@ void Game::nextBlcokType()
 
 void Game::Init()
 {
-	// 创建一个照相机
-	this->camera = new Camera(glm::vec3(3.0f, 8.0f, 3.0f));
-
-	// 创建鼠标拾取器
-	// this->mousePicker = new MousePicker(this->camera, glm::make_mat4(projectionMatrix));
-	this->mousePicker = new MousePicker(this->camera, glm::perspective(65.0f, (float)Width / Height, 0.125f, 100.0f));
-
 	// 载入游戏所需的着色器与纹理资源
 	// GrassBlock
 	ResourceManager::LoadTexture("textures/grass_block_side.png", false, "grass_block_side");
@@ -61,6 +54,13 @@ void Game::Init()
 	this->world->Load();
 	// 初始化世界
 	this->world->init();
+
+	// 创建一个照相机
+	this->camera = new Camera(glm::vec3(3.0f, this->world->highest(3, 3)+1.5f, 3.0f));
+
+	// 创建鼠标拾取器
+	// this->mousePicker = new MousePicker(this->camera, glm::make_mat4(projectionMatrix));
+	this->mousePicker = new MousePicker(this->camera, glm::perspective(65.0f, (float)Width / Height, 0.125f, 100.0f));
 
 }
 

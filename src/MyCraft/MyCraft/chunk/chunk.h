@@ -23,6 +23,8 @@ public:
 	void genChunk();	// 根据X，Z生成区块或从文件载入
 	void render(CubeRender *cubeRender);	
 
+	int highest(int x, int z);
+
 	Block *getBlock(int x, int y, int z);
 	void putBlock(int x, int y, int z, BlockType type);
 	void removeBlock(int x, int y, int z);

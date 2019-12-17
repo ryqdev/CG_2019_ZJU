@@ -28,6 +28,15 @@ char World::get_map(int x, int y, int z)
 	return c->getBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE) != nullptr;
 }
 
+int World::highest(int x, int z)
+{
+	int X = chunked(x), Z = chunked(z);
+	Chunk *c = findChunk(X, Z);
+	if (!c) return 0;
+
+	return c->highest(x-X*CHUNK_SIZE, z-Z*CHUNK_SIZE);
+}
+
 World::~World()
 {
 	//  Õ∑≈‰÷»æ∆˜
