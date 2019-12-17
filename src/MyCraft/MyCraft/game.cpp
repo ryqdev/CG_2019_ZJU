@@ -38,15 +38,19 @@ void Game::nextBlcokType()
 
 void Game::Init()
 {
-	// 载入游戏所需的着色器与纹理资源
-	// GrassBlock
-	ResourceManager::LoadTexture("textures/grass_block_side.png", false, "grass_block_side");
-	ResourceManager::LoadTexture("textures/grass_block_up.png", false, "grass_block_up");
-	// Ice
-	ResourceManager::LoadTexture("textures/ice.png", false, "ice_block");
-	ResourceManager::LoadTexture("textures/gold_ore.png", false, "gold_ore");
+	// 纹理数组
+	vector<const GLchar*> files;
+	files.push_back("textures/grass_block_up.png");
+	files.push_back("textures/grass_block_side.png");
+	files.push_back("textures/ice.png");
+	files.push_back("textures/gold_ore.png");
+	ResourceManager::LoadTextureArray(files, false, "blocks");
 
 	ResourceManager::LoadShader("shaders/sky_vertex.glsl", "shaders/sky_fragment.glsl", nullptr, "shader_skybox");
+	ResourceManager::LoadShader("shaders/chunk_vertex.glsl", "shaders/chunk_fragment.glsl", 
+		nullptr, "shader_chunk");
+	ResourceManager::LoadShader("shaders/line_vertex.glsl", "shaders/line_fragment.glsl",
+		nullptr, "shader_line");
 
 	// 新建一个 world 对象
 	this->world = new World();
@@ -56,7 +60,7 @@ void Game::Init()
 	this->world->init();
 
 	// 创建一个照相机
-	this->camera = new Camera(glm::vec3(3.0f, this->world->highest(3, 3)+1.5f, 3.0f));
+	this->camera = new Camera(glm::vec3(3.0f, this->world->highest(3, 3)+2.5f, 3.0f));
 
 	// 创建鼠标拾取器
 	// this->mousePicker = new MousePicker(this->camera, glm::make_mat4(projectionMatrix));
@@ -75,14 +79,14 @@ void Game::Render()
 {
 
 	// 暂时使用固定管线渲染的方式，但是 skyBox 是用着色器渲染的
-
+	
 	// clear buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
-
+	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(camera->getZooom(), (float)Width / Height, 0.125f, 100.0f);
+	//gluPerspective(camera->getZooom(), (float)Width / Height, 0.125f, 100.0f);
 
 	// 设置模型矩阵
 	glMatrixMode(GL_MODELVIEW);
@@ -91,8 +95,12 @@ void Game::Render()
 	// 设置视点
 	camera->setLookAt();
 
+	glm::mat4 view = camera->GetViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)Width/Height, 0.125f, 100.0f);
+	glm::mat4 matrix = projection* view;
+
 	// 渲染世界
-	world->render();
+	world->render(matrix, camera->Position);
 
 	// 测试鼠标射线
 	this->mousePicker->render_ray();
@@ -129,12 +137,12 @@ void Game::MouseMoveCallback(int xpos, int ypos)
 		x = roundf(ray.x * u + camera->Position.x);
 		y = roundf(ray.y * u + camera->Position.y);
 		z = roundf(ray.z * u + camera->Position.z);
-		if (world->get_map(x, y, z) ) {
+		if (world->get_block(x, y, z) != AIR) {
 			if (block_last_x == x && block_last_y == y && block_last_z == z) {
 				// cout << "已经选中了"<< endl;
 			}
 			else {
-				world->unpick_block(block_last_x, block_last_y, block_last_z);
+				world->unpick_block();
 				world->pick_block(x, y, z);
 				block_last_x = x;
 				block_last_y = y;
@@ -162,7 +170,7 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 			}
 			pos = pos + p;
 
-			if (!world->get_map(pos.x, pos.y, pos.z)) {	// 当前位置没有方块
+			if (world->get_block(pos.x, pos.y, pos.z) == AIR) {	// 当前位置没有方块
 				if (glm::abs(camera->Position.x - pos.x) < 0.6
 					&& glm::abs(camera->Position.z - pos.z) < 0.6
 					&& pos.y + 0.3 > camera->Position.y - 1.3
@@ -176,8 +184,8 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 	}
 	else if (button == GLUT_RIGHT_BUTTON) {		// 消除方块
 		if (state == GLUT_DOWN) {
-			if (world->get_map(block_last_x, block_last_y, block_last_z)) {
-				world->clear_block(block_last_x, block_last_y, block_last_z);
+			if (world->get_block(block_last_x, block_last_y, block_last_z) != AIR) {
+				world->remove_block(block_last_x, block_last_y, block_last_z);
 			}
 		}
 	}

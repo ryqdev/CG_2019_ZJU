@@ -27,6 +27,7 @@ public:
 	// Resource storage
 	static std::map<std::string, Shader>    Shaders;
 	static std::map<std::string, Texture2D> Textures;
+	static std::map<std::string, Texture2DArray> TextureArrays;
 
 	// Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
 	static Shader   LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name);
@@ -39,6 +40,11 @@ public:
 	
 	// Retrieves a stored texture
 	static Texture2D GetTexture(std::string name);
+
+	// 纹理数组的载入和获取
+	static Texture2DArray LoadTextureArray(std::vector<const GLchar*> files, 
+		GLboolean alpha, std::string name);
+	static Texture2DArray GetTextureArray(std::string name);
 	
 	// Properly de-allocates all loaded resources
 	static void      Clear();
@@ -52,6 +58,10 @@ private:
 	
 	// Loads a single texture from file
 	static Texture2D loadTextureFromFile(const GLchar* file, GLboolean alpha);
+
+	// 从文件载入多个纹理到纹理数组中
+	static Texture2DArray loadTextureArrayFromFile(
+		std::vector<const GLchar*> files, GLboolean alpha);
 };
 
 #endif

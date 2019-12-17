@@ -9,6 +9,7 @@
 // Instantiate static variables
 std::map<std::string, Texture2D>    ResourceManager::Textures;
 std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Texture2DArray> ResourceManager::TextureArrays;
 
 
 Shader ResourceManager::LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name)
@@ -33,6 +34,17 @@ Texture2D ResourceManager::GetTexture(std::string name)
 	return Textures[name];
 }
 
+Texture2DArray ResourceManager::LoadTextureArray(std::vector<const GLchar*> files, GLboolean alpha, std::string name)
+{
+	TextureArrays[name] = loadTextureArrayFromFile(files, alpha);
+	return TextureArrays[name];
+}
+
+Texture2DArray ResourceManager::GetTextureArray(std::string name)
+{
+	return TextureArrays[name];
+}
+
 void ResourceManager::Clear()
 {
 	// (Properly) delete all shaders	
@@ -40,6 +52,9 @@ void ResourceManager::Clear()
 		glDeleteProgram(iter.second.ID);
 	// (Properly) delete all textures
 	for (auto iter : Textures)
+		glDeleteTextures(1, &iter.second.ID);
+	// (Properly) delete all textureArrays
+	for (auto iter : TextureArrays)
 		glDeleteTextures(1, &iter.second.ID);
 }
 
@@ -104,4 +119,30 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
 	// And finally free image data
 	SOIL_free_image_data(image);
 	return texture;
+}
+
+Texture2DArray ResourceManager::loadTextureArrayFromFile(std::vector<const GLchar*> files, GLboolean alpha)
+{
+	// Create Texture object
+	Texture2DArray textureArray;
+	if (alpha)
+	{
+		textureArray.Internal_Format = GL_RGBA;
+		textureArray.Image_Format = GL_RGBA;
+	}
+	// Load image
+	int width, height;
+	std::vector<unsigned char*> images;
+	for (auto iter : files) {
+		unsigned char* image = SOIL_load_image(iter, &width, &height, 0, 
+			textureArray.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+		images.push_back(image);
+	}
+	
+	// Now generate texture
+	textureArray.Generate(width, height, images);
+	// And finally free image data
+	for (auto iter : images)
+		SOIL_free_image_data(iter);
+	return textureArray;
 }

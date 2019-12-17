@@ -1,13 +1,11 @@
 #pragma once
 
-#include <vector>
-
 #include <GL/glew.h>
 #include <unordered_map>
+#include <iostream>
 
 #include "../blockType.h"
 #include "perlinNoise.h"
-#include "../blockFactory.h"
 
 const int CHUNK_SIZE = 16;
 const int CHUNK_HEIGHT = 128;
@@ -20,16 +18,25 @@ public:
 	Chunk(int x, int z) ;
 	~Chunk();
 
-	void genChunk();	// 根据X，Z生成区块或从文件载入
-	void render(CubeRender *cubeRender);	
+	void genChunk();	// 生成或载入区块
+	void genBuffer();	// 生成并绑定buffer
+	void render();	
 
-	int highest(int x, int z);
+	int highest(int x, int z);	// 获取指定位置的最大高度
 
-	Block *getBlock(int x, int y, int z);
-	void putBlock(int x, int y, int z, BlockType type);
-	void removeBlock(int x, int y, int z);
+	BlockType getBlock(int x, int y, int z);	// 获取指定位置方块
+	void putBlock(int x, int y, int z, BlockType w);	// 在指定位置放置方块
+	void removeBlock(int x, int y, int z);	// 移除指定位置的方块
 private:
-	bool loaded = false;
-	std::unordered_map<int, Block*> blocks;
+	bool loaded = false;	// 用来判断方块是否已生成或载入
+	bool dirty = true;		// 用来判断buffer是否已生成并绑定
+
+	GLuint vao = 0, vbo = 0;
+	int vertsNum = 0;
+	std::unordered_map<int, BlockType> blocks;
+
+	// xyz为实际的xyz
+	void genCubeBuffer(std::vector<float> &data, int x, int y, int z, BlockType w, 
+		bool left, bool right, bool top, bool bottom, bool front, bool back);
 };
 

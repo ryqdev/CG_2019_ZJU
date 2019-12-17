@@ -135,24 +135,24 @@ bool Camera::doCollisions(World* world)
 	float pad = 0.25;
 
 	for (int dy = 0; dy < 2; dy++) {
-		if (px < -pad && world->get_map(nx - 1, ny - dy, nz)) {
+		if (px < -pad && world->get_block(nx - 1, ny - dy, nz) != AIR) {
 			*x = nx - pad;
 		}
-		if (px > pad && world->get_map(nx + 1, ny - dy, nz)) {
+		if (px > pad && world->get_block(nx + 1, ny - dy, nz) != AIR) {
 			*x = nx + pad;
 		}
-		if (py < -pad && world->get_map(nx, ny - dy - 1, nz)) {
+		if (py < -pad && world->get_block(nx, ny - dy - 1, nz) != AIR) {
 			*y = ny - pad;
 			result = true;
 		}
-		if (py > pad && world->get_map(nx, ny - dy + 1, nz)) {
+		if (py > pad && world->get_block(nx, ny - dy + 1, nz) != AIR) {
 			*y = ny + pad;
 			result = true;
 		}
-		if (pz < -pad && world->get_map(nx, ny - dy, nz - 1)) {
+		if (pz < -pad && world->get_block(nx, ny - dy, nz - 1) != AIR) {
 			*z = nz - pad;
 		}
-		if (pz > pad && world->get_map(nx, ny - dy, nz + 1)) {
+		if (pz > pad && world->get_block(nx, ny - dy, nz + 1) != AIR) {
 			*z = nz + pad;
 		}
 	}

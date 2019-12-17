@@ -2,6 +2,9 @@
 #include "resource_manager.h"
 #include "light.h"
 
+int World::chunked(int x) {
+	return floor(float(x) / CHUNK_SIZE);
+}
 
 DirectionLight light(GL_LIGHT0);
 PointLight light1(GL_LIGHT1);
@@ -24,17 +27,98 @@ Chunk* World::findChunk(int x, int z)
 	return nullptr;
 }
 
-int World::chunked(int x) {
-	return floor(float(x) / CHUNK_SIZE);
+void World::drawWireCube(int x, int y, int z, glm::mat4 matrix)
+{
+	const float vertices[][3] = {
+		-1, -1, -1,
+		 1, -1, -1,
+		 1,  1, -1,
+		-1,  1, -1,
+		-1, -1,  1,
+		 1, -1,  1,
+		 1,  1,  1,
+		-1,  1,  1,
+	};
+
+	const int indices[] = {
+		0, 1, 0, 3, 0, 4,
+		1, 2, 1, 5, 2, 3,
+		2, 6, 3, 7, 4, 5,
+		4, 7, 5, 6, 6, 7
+	};
+
+	float data[24*3];
+	for (int i = 0; i < 24; i++) {
+		data[i*3] = x+vertices[indices[i]][0]*0.6;
+		data[i*3+1] = y+vertices[indices[i]][1]*0.6;
+		data[i*3+2] = z+vertices[indices[i]][2]*0.6;
+	}
+
+	Shader s = ResourceManager::GetShader("shader_line");
+	s.Use();
+	s.SetMatrix4("matrix", matrix, false);
+
+	GLuint vao, vbo;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void *)0);
+
+	glDrawArrays(GL_LINES, 0, 24);
+
+	glBindVertexArray(0);
+
+	glUseProgram(0);
 }
 
-char World::get_map(int x, int y, int z)
+World::~World()
+{
+	// 释放渲染器
+	if (cubeRender != nullptr)
+		delete cubeRender;
+}
+
+void World::pick_block(int x, int y, int z)
+{
+	picked = true;
+	pickedBlock = {x, y, z};
+}
+
+void World::unpick_block()
+{
+	picked = false;
+}
+
+BlockType World::get_block(int x, int y, int z)
 {
 	int X = chunked(x), Z = chunked(z);
 	Chunk *c = findChunk(X, Z);
-	if (!c) return 0;
+	if (!c) return AIR;
 
-	return c->getBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE) != nullptr;
+	return c->getBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE);
+}
+
+void World::put_block(int x, int y, int z, BlockType type)
+{
+	int X = chunked(x), Z = chunked(z);
+	Chunk *c = findChunk(X, Z);
+	if (!c) return;
+
+	c->putBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE, type);
+}
+
+void World::remove_block(int x, int y, int z)
+{
+	int X = chunked(x), Z = chunked(z);
+	Chunk *c = findChunk(X, Z);
+	if (!c) return;
+
+	c->removeBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE);
 }
 
 int World::highest(int x, int z)
@@ -46,66 +130,18 @@ int World::highest(int x, int z)
 	return c->highest(x-X*CHUNK_SIZE, z-Z*CHUNK_SIZE);
 }
 
-World::~World()
-{
-	// 释放渲染器
-	if (cubeRender != nullptr)
-		delete cubeRender;
-}
-
 void World::Load()
 {
-	for (int i = -1; i < 1; i++) {
-		for (int j = -1; j < 1; j++) {
+	for (int i = -2; i <= 2; i++) {
+		for (int j = -2; j <= 2; j++) {
 			Chunk *chunk = new Chunk(i, j);
 			chunk->genChunk();
+			chunk->genBuffer();
 			chunks.push_back(chunk);
 		}
 	}
 
 	this->skyBox = SkyBox();
-}
-
-void World::pick_block(int x, int y, int z)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c) return;
-
-	Block *b = c->getBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE);
-	if (b)
-		b->select_block();
-}
-
-void World::unpick_block(int x, int y, int z)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c) return;
-
-	Block *b = c->getBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE);
-	if (b)
-		b->unselect_block();
-}
-
-
-void World::put_block(int x, int y, int z, BlockType type)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c) return;
-
-	c->putBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE, type);
-}
-
-void World::clear_block(int x, int y, int z)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c)
-		return;
-
-	c->removeBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE);
 }
 
 void World::init()
@@ -115,7 +151,7 @@ void World::init()
 
 	// 初始化天空盒
 	skyBox.init(ResourceManager::GetShader("shader_skybox"));
-
+	
 	//设置光线参数
 	light.SetAmbientColor(0.6f, 0.6f, 0.6f, 1.0f);
 	light.SetDiffuseColor(0.8f, 0.8f, 0.8f, 1.0f);
@@ -171,11 +207,35 @@ void World::SetSpecularMaterial(float r, float g, float b, float a) {
 }
 
 
-void World::render()
+void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 {
 	// 渲染天空盒
 	skyBox.render();
 
+	glEnable(GL_CULL_FACE);
+
+	// 渲染区块
+	Shader s = ResourceManager::GetShader("shader_chunk");
+	s.Use();
+	s.SetInteger("tex", 0);
+	s.SetMatrix4("matrix", matrix);
+
+	Texture2DArray textureArray = ResourceManager::GetTextureArray("blocks");
+	textureArray.Bind();
+
+	for (auto &chunk : this->chunks) {
+		chunk->render();
+	}
+
+	glUseProgram(0);
+
+	if (picked) {
+		drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z, matrix);
+	}
+
+	
+
+	// 设置简单的光照
 	//设置光照
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
@@ -197,10 +257,10 @@ void World::render()
 	//glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	//glLightfv(GL_LIGHT0, GL_AMBIENT, gray);
 	//glEnable(GL_LIGHT0);
-
-	for (auto &chunk : this->chunks) {
-		chunk->render(cubeRender);
-	}
+	/*
+	if (picked) {
+		cubeRender->drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z);
+	}*/
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
