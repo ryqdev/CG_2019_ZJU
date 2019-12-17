@@ -26,6 +26,7 @@
     </ClCompile>
     <ClCompile Include="chunk\chunk.cpp" />
     <ClCompile Include="chunk\perlinNoise.cpp" />
+    <ClCompile Include="..\..\..\..\..\大三（上）\计算机图形学\project\CG_2019_ZJU-master\src\MyCraft\MyCraft\light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -58,6 +59,7 @@
     </ClInclude>
     <ClInclude Include="chunk\chunk.h" />
     <ClInclude Include="chunk\perlinNoise.h" />
+    <ClInclude Include="..\..\..\..\..\大三（上）\计算机图形学\project\CG_2019_ZJU-master\src\MyCraft\MyCraft\light.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blocks">
