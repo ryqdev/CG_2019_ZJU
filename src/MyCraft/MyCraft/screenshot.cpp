@@ -34,8 +34,7 @@ void Screenshot::save_img(struct tm* ptminfo)
 	string hour = to_string(ptminfo->tm_hour);
 	string minute = to_string(ptminfo->tm_min);
 	string second = to_string(ptminfo->tm_sec);
-	string d = ".\\screenshot\\img" + second + ".jpg";
-
+	string d = ".\\screenshot\\img" + year + "_" + month + "_" + day + "_" + hour + "_" + minute + "_" +  second + ".jpg";
 	int err = SOIL_save_image
 	(
 		d.c_str(),
@@ -47,6 +46,6 @@ void Screenshot::save_img(struct tm* ptminfo)
 		cout << "can't save the image" << endl;
 	}
 	else {
-		cout << "iamge is save into " << d << endl;
+		cout << "image is save into " << d << endl;
 	}
 }

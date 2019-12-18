@@ -108,6 +108,8 @@ void keyDown(unsigned char key, int x, int y)
 
 	if (key == 'p' || key == 'P')
 	{
+		time(&rawtime);
+		ptminfo = localtime(&rawtime);
 		Screenshot::save_img(ptminfo);
 	}
 }
@@ -144,8 +146,7 @@ void  mouse_click_callback(int button, int state, int x, int y)
 
 int main(int argc, char* argv[])
 {
-	time(&rawtime);
-	ptminfo = localtime(&rawtime);
+
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);

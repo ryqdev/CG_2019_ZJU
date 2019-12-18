@@ -23,7 +23,7 @@ enum Camera_Movement {
 // Default camera values
 const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 2.0f;
+const GLfloat SPEED = 4.0f;
 const GLfloat SENSITIVTY = 0.5f;
 const GLfloat ZOOM = 65.0f;
 
@@ -76,13 +76,6 @@ public:
 	glm::mat4 GetViewMatrix()
 	{
 		return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
-	}
-
-	void setLookAt()
-	{
-		gluLookAt(Position.x, Position.y, Position.z, 
-			(Position+Front).x, (Position + Front).y, (Position + Front).z,
-			Up.x, Up.y, Up.z);
 	}
 
 	void doMovement(GLboolean Keys[], World* world, GLfloat deltaTime);

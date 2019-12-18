@@ -77,23 +77,9 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render()
 {
-
-	// 暂时使用固定管线渲染的方式，但是 skyBox 是用着色器渲染的
-	
 	// clear buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
-	
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	//gluPerspective(camera->getZooom(), (float)Width / Height, 0.125f, 100.0f);
-
-	// 设置模型矩阵
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	// 设置视点
-	camera->setLookAt();
 
 	glm::mat4 view = camera->GetViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)Width/Height, 0.125f, 100.0f);

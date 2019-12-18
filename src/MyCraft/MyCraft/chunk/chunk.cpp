@@ -36,7 +36,7 @@ void Chunk::genChunk()
 			}
 
 			// 由于目前绘制效率过低，只生成两层
-			for (int y = h-2; y < h; y++) {
+			for (int y = 0; y < h; y++) {
 				int key = (y * CHUNK_SIZE + x) * CHUNK_SIZE + z;
 				blocks.insert(std::make_pair(key, GRASS));
 			}
@@ -80,7 +80,7 @@ void Chunk::genBuffer()
 	// 顶点数
 	vertsNum = 0;
 	if (data.size() != 0)
-		vertsNum = data.size() / 6;
+		vertsNum = data.size() / 9;
 
 	// 删除已有的vao和vbo
 	if (vao != 0)
@@ -98,10 +98,13 @@ void Chunk::genBuffer()
 	glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(float), &data[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void *)0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void *)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void *)(3*sizeof(float)));
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void *)(6*sizeof(float)));
 
 	dirty = false;
 }
@@ -244,8 +247,16 @@ void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockTy
 		 0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
 		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 	};
-	
 
+	static const float normals[6][3] = {
+		{-1, 0, 0},
+		{+1, 0, 0},
+		{0, +1, 0},
+		{0, -1, 0},
+		{0, 0, +1},
+		{0, 0, -1}
+	};
+	
 	bool faces[] = {left, right, top, bottom, front, back};
 
 	// 遍历方块的6个面
@@ -264,6 +275,10 @@ void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockTy
 			data.push_back(position[i][v][4]);
 			// w
 			data.push_back(ETextureType::blockTextures[w][i]);
+			// 法线
+			data.push_back(normals[i][0]);
+			data.push_back(normals[i][1]);
+			data.push_back(normals[i][2]);
 		}
 	}
 }
