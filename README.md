@@ -62,6 +62,9 @@ For the sake of the correctness in README, Chinese will be used in the following
 
 * 以16 * 16 * 128的大小划分区块，使用柏林噪声生成地形，修改原本绘制与修改地形的代码。
 
+## 2019年12月18日更新
+* 修复了工程运行失败的问题
+* 完善截屏功能，图片保存在screenshot文件里，截图命名为年_月_日_小时_分钟_秒
 
 ## To-Do list
 * 基础要求
@@ -71,7 +74,7 @@ For the sake of the correctness in README, Chinese will be used in the following
 - [x] 变换:具有基本几何变换功能(旋转、平移、缩放等);
 - [ ] 光照:基本光照明模型要求，并实现基本的光源编辑(如调整光源的位置，光强等参数);
 - [x] 漫游:能对建模后场景进行漫游如Zoom In/Out， Pan, Orbit, Zoom To Fit等 观察功能。
-- [ ] 记录:能够提供动画播放功能(多帧数据连续绘制)，能够提供屏幕截取/保 存功能。
+- [x] 记录:能够提供动画播放功能(多帧数据连续绘制)，能够提供屏幕截取/保 存功能。
 * 高级要求
 - [ ] 具有NURBS曲面建模能力
 - [x] 漫游时可实时碰撞检测
