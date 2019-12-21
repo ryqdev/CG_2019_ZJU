@@ -66,6 +66,10 @@ For the sake of the correctness in README, Chinese will be used in the following
 * 修复了工程运行失败的问题
 * 完善截屏功能，图片保存在screenshot文件里，截图命名为年_月_日_小时_分钟_秒
 
+## 2019年12月22日更新
+* 增加了树木与机器人的绘制
+* 目前帧率较低，同时树木与机器人存在与地面不完全贴合的问题
+
 ## To-Do list
 * 基础要求
 - [x] 建模:基于OpenGL/WebGL，具有基本体素(立方体、球、圆柱、圆锥、多 面棱柱、多面棱台)的建模表达能力

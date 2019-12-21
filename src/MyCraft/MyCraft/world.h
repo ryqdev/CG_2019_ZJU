@@ -6,6 +6,8 @@
 #include "cubeRender.h"
 #include "blockFactory.h"
 #include "chunk/chunk.h"
+#include "tree.h"
+#include "robot.h"
 
 #include <vector>
 #include<unordered_map>
@@ -16,6 +18,8 @@ class World
 {
 private:
 	CubeRender* cubeRender;
+	TreeRender* treeRender;
+	RobotRender* robotRender;
 
 	bool picked = false;
 	glm::vec3 pickedBlock;

@@ -1,4 +1,6 @@
 #include "perlinNoise.h"
+#include <random>
+#include <algorithm> 
 
 PerlinNoise::PerlinNoise()
 {

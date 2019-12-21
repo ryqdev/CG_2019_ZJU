@@ -46,6 +46,10 @@ void Game::Init()
 	files.push_back("textures/gold_ore.png");
 	ResourceManager::LoadTextureArray(files, false, "blocks");
 
+	//装载树木纹理
+	ResourceManager::LoadTexture("textures/tree.png", false, "trunk");
+	ResourceManager::LoadTexture("textures/leaf.png", false, "leaves");
+
 	ResourceManager::LoadShader("shaders/sky_vertex.glsl", "shaders/sky_fragment.glsl", nullptr, "shader_skybox");
 	ResourceManager::LoadShader("shaders/chunk_vertex.glsl", "shaders/chunk_fragment.glsl", 
 		nullptr, "shader_chunk");
@@ -80,6 +84,17 @@ void Game::Render()
 	// clear buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
+    
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(camera->getZooom(),(float)Width/Height,0.125f,100.0f);
+
+	//设置模型矩阵
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//设置视点
+	camera->setLookAt();
 
 	glm::mat4 view = camera->GetViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)Width/Height, 0.125f, 100.0f);

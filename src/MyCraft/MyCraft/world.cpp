@@ -81,6 +81,10 @@ World::~World()
 	// 释放渲染器
 	if (cubeRender != nullptr)
 		delete cubeRender;
+	//释放树木渲染器
+	if ( treeRender!= nullptr)
+		delete treeRender;
+
 }
 
 void World::pick_block(int x, int y, int z)
@@ -148,6 +152,12 @@ void World::init()
 {
 	// 初始化立方体渲染器
 	cubeRender = new CubeRender();
+	
+	// 初始化树木渲染器
+	treeRender = new TreeRender();
+	
+	//初始化机器人
+	robotRender=new RobotRender();
 
 	// 初始化天空盒
 	skyBox.init(ResourceManager::GetShader("shader_skybox"));
@@ -214,6 +224,7 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 
 	glEnable(GL_CULL_FACE);
 
+	
 	// 渲染区块
 	Shader s = ResourceManager::GetShader("shader_chunk");
 	s.Use();
@@ -233,6 +244,22 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 		drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z, matrix);
 	}
 
+	//渲染树木 最多N_TREE数量树木
+	Texture2D trunk= ResourceManager::GetTexture("trunk");
+	Texture2D leaves = ResourceManager::GetTexture("leaves");
+	for (int i = 0; i < N_TREE; i++) {
+		Tree t(treeRender->treelist[i][0], highest(treeRender->treelist[i][0], treeRender->treelist[i][1]), treeRender->treelist[i][1]);
+		treeRender->DrawTree(t, trunk, leaves);
+	}
+	
+	//渲染robot
+	for (int i = 0; i < N_ROBOT; i++) {
+		robotRender->robotList[i].randomMove();
+		float x = robotRender->robotList[i].x;
+		float z = robotRender->robotList[i].z;
+		robotRender->robotList[i].setLocation(x,highest(x,z),z);
+		robotRender->DrawRobot(robotRender->robotList[i]);
+	}
 	
 
 	// 设置简单的光照

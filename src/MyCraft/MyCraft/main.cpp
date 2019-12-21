@@ -128,7 +128,7 @@ void init()
 	glShadeModel(GL_SMOOTH);	// 着色器模式
 	glEnable(GL_TEXTURE_2D);	// 打开纹理映射
 
-	// 初始化游戏
+								// 初始化游戏
 	MineCraft.Init();
 
 	timer(0);

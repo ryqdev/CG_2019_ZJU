@@ -66,14 +66,14 @@ void Chunk::genBuffer()
 
 		bool left, right, top, bottom, front, back;
 		left = right = top = bottom = front = back = false;
-		if (getBlock(x-1, y, z) == AIR) left = true;
-		if (getBlock(x+1, y, z) == AIR) right = true;
-		if (getBlock(x, y+1, z) == AIR) top = true;
-		if (getBlock(x, y-1, z) == AIR) bottom = true;
-		if (getBlock(x, y, z+1) == AIR) front = true;
-		if (getBlock(x, y, z-1) == AIR) back = true;
-		
-		genCubeBuffer(data, x+X*CHUNK_SIZE, y, z+Z*CHUNK_SIZE, it->second,
+		if (getBlock(x - 1, y, z) == AIR) left = true;
+		if (getBlock(x + 1, y, z) == AIR) right = true;
+		if (getBlock(x, y + 1, z) == AIR) top = true;
+		if (getBlock(x, y - 1, z) == AIR) bottom = true;
+		if (getBlock(x, y, z + 1) == AIR) front = true;
+		if (getBlock(x, y, z - 1) == AIR) back = true;
+
+		genCubeBuffer(data, x + X*CHUNK_SIZE, y, z + Z*CHUNK_SIZE, it->second,
 			left, right, top, bottom, front, back);
 	}
 
@@ -95,16 +95,16 @@ void Chunk::genBuffer()
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(float), &data[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void *)0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void *)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void *)(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float)*9, (void *)(6*sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void *)(6 * sizeof(float)));
 
 	dirty = false;
 }
@@ -135,10 +135,10 @@ int Chunk::highest(int x, int z)
 		int iy = key / CHUNK_SIZE;
 
 		if (ix == x && iz == z) {
-			highest = std::max(highest, iy);
+			highest = highest>iy?highest:iy;
 		}
 	}
-	
+
 	return highest;
 }
 
@@ -146,14 +146,14 @@ int Chunk::highest(int x, int z)
 BlockType Chunk::getBlock(int x, int y, int z)
 {
 	// 判断是否越界
-	if (x > CHUNK_SIZE-1 || y > CHUNK_HEIGHT-1 || z > CHUNK_SIZE-1)
+	if (x > CHUNK_SIZE - 1 || y > CHUNK_HEIGHT - 1 || z > CHUNK_SIZE - 1)
 		return AIR;
 	if (x < 0 || y < 0 || z < 0)
 		return AIR;
 
 	int key = (y * CHUNK_SIZE + x) * CHUNK_SIZE + z;
 	auto it = blocks.find(key);
-	if (it != blocks.end()) 
+	if (it != blocks.end())
 		return it->second;
 	else
 		return AIR;
@@ -163,14 +163,14 @@ BlockType Chunk::getBlock(int x, int y, int z)
 void Chunk::putBlock(int x, int y, int z, BlockType w)
 {
 	// 判断是否越界
-	if (x > CHUNK_SIZE-1 || y > CHUNK_HEIGHT-1 || z > CHUNK_SIZE-1)
+	if (x > CHUNK_SIZE - 1 || y > CHUNK_HEIGHT - 1 || z > CHUNK_SIZE - 1)
 		return;
 	if (x < 0 || y < 0 || z < 0)
 		return;
 
 	int key = (y * CHUNK_SIZE + x) * CHUNK_SIZE + z;
 	auto it = blocks.find(key);
-	if (it != blocks.end()) 
+	if (it != blocks.end())
 		it->second = w;
 	else
 		blocks.insert(std::make_pair(key, w));
@@ -182,14 +182,14 @@ void Chunk::putBlock(int x, int y, int z, BlockType w)
 void Chunk::removeBlock(int x, int y, int z)
 {
 	// 判断是否越界
-	if (x > CHUNK_SIZE-1 || y > CHUNK_HEIGHT-1 || z > CHUNK_SIZE-1)
+	if (x > CHUNK_SIZE - 1 || y > CHUNK_HEIGHT - 1 || z > CHUNK_SIZE - 1)
 		return;
 	if (x < 0 || y < 0 || z < 0)
 		return;
 
 	int key = (y * CHUNK_SIZE + x) * CHUNK_SIZE + z;
 	auto it = blocks.find(key);
-	if (it != blocks.end()) 
+	if (it != blocks.end())
 		blocks.erase(it);
 
 	dirty = true;
@@ -208,56 +208,56 @@ void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockTy
 		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
 		// right
-		 0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
 
-		 // top
+		// top
 		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
 		-0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
 		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		
-		 // bottom
+
+		// bottom
 		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
 		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
 		// front
 		-0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 		-0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
 
 		// back
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 		-0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
 		-0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
 		-0.5f,  0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 	};
 
 	static const float normals[6][3] = {
-		{-1, 0, 0},
-		{+1, 0, 0},
-		{0, +1, 0},
-		{0, -1, 0},
-		{0, 0, +1},
-		{0, 0, -1}
+		{ -1, 0, 0 },
+		{ +1, 0, 0 },
+		{ 0, +1, 0 },
+		{ 0, -1, 0 },
+		{ 0, 0, +1 },
+		{ 0, 0, -1 }
 	};
-	
-	bool faces[] = {left, right, top, bottom, front, back};
+
+	bool faces[] = { left, right, top, bottom, front, back };
 
 	// 遍历方块的6个面
 	for (int i = 0; i < 6; i++) {
@@ -267,9 +267,9 @@ void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockTy
 		// 遍历面上的6个顶点
 		for (int v = 0; v < 6; v++) {
 			// xyz
-			data.push_back(x+position[i][v][0]);
-			data.push_back(y+position[i][v][1]);
-			data.push_back(z+position[i][v][2]);
+			data.push_back(x + position[i][v][0]);
+			data.push_back(y + position[i][v][1]);
+			data.push_back(z + position[i][v][2]);
 			// uv
 			data.push_back(position[i][v][3]);
 			data.push_back(position[i][v][4]);

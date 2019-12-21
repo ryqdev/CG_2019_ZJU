@@ -91,6 +91,13 @@ public:
 
 	GLfloat getZooom();
 
+	void setLookAt()
+	{
+		gluLookAt(Position.x, Position.y, Position.z,
+			(Position + Front).x, (Position + Front).y, (Position + Front).z,
+			Up.x, Up.y, Up.z);
+	}
+
 private:
 
 	bool firstMouse;
