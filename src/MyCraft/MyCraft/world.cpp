@@ -224,8 +224,19 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 
 	glEnable(GL_CULL_FACE);
 
+	// 删除位于删除半径外的区块
+	int cX = chunked(cameraPos.x);
+	int cZ = chunked(cameraPos.z);
+	for (auto it = chunks.begin(); it != chunks.end(); ) {
+		if (max(abs((*it)->X-cX), abs((*it)->Z-cZ)) > DESTROY_RADIUS) {
+			delete (*it);
+			it = chunks.erase(it);
+		} else {
+			it++;
+		}
+	}
 	
-	// 渲染区块
+	// 更新并渲染区块
 	Shader s = ResourceManager::GetShader("shader_chunk");
 	s.Use();
 	s.SetInteger("tex", 0);
@@ -234,8 +245,16 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 	Texture2DArray textureArray = ResourceManager::GetTextureArray("blocks");
 	textureArray.Bind();
 
-	for (auto &chunk : this->chunks) {
-		chunk->render();
+	for (int i = -CREATE_RADIUS; i <= CREATE_RADIUS; i++) {
+		for (int j = -CREATE_RADIUS; j <= CREATE_RADIUS; j++) {
+			Chunk* c = findChunk(cX+i, cZ+j);
+			// 如果指定位置不存在区块，则创建或载入一个区块
+			if (!c) {
+				c = new Chunk(cX+i, cZ+j);
+				chunks.push_back(c);
+			}
+			c->render();
+		}
 	}
 
 	glUseProgram(0);

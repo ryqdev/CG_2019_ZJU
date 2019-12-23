@@ -70,6 +70,10 @@ For the sake of the correctness in README, Chinese will be used in the following
 * 增加了树木与机器人的绘制
 * 目前帧率较低，同时树木与机器人存在与地面不完全贴合的问题
 
+## 2019年12月23日更新
+
+* 修改地图生成方法，动态加载、卸载相机附近的区块
+
 ## To-Do list
 * 基础要求
 - [x] 建模:基于OpenGL/WebGL，具有基本体素(立方体、球、圆柱、圆锥、多 面棱柱、多面棱台)的建模表达能力

@@ -14,6 +14,10 @@
 
 const int WIDTH = 100;
 
+// 创建区块的半径与移除区块的半径
+const int CREATE_RADIUS = 4;
+const int DESTROY_RADIUS = 6;
+
 class World
 {
 private:
