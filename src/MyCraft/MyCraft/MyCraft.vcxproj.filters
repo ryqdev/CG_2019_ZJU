@@ -29,6 +29,7 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="robot.cpp" />
+    <ClCompile Include="file.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -64,6 +65,7 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="robot.h" />
+    <ClInclude Include="file.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blocks">
