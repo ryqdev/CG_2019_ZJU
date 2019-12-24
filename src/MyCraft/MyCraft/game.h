@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "world.h"
 #include "mousePicker.h"
+#include "file.h"
 
 // Represents the current state of the game
 enum GameState {
@@ -15,13 +16,13 @@ enum GameState {
 class Game
 {
 private:
-	BlockType currentType;	// µ±Ç°Êó±ê·ÅÖÃµÄ·½¿éÀàĞÍ
+	BlockType currentType;	// å½“å‰é¼ æ ‡æ”¾ç½®çš„æ–¹å—ç±»å‹
 
 public:
-	// ÓÎÏ·×´Ì¬
+	// æ¸¸æˆçŠ¶æ€
 	GameState  State;
 	GLboolean  Keys[1024];
-	// ÓÎÏ·´°¿ÚµÄ¿í¸ß
+	// æ¸¸æˆçª—å£çš„å®½é«˜
 	GLuint     Width, Height;
 
 	Camera* camera;
@@ -30,26 +31,28 @@ public:
 
 	World* world;
 
+	File file;
+	
 	void nextBlcokType();
 
 	// Constructor/Destructor
 	Game(GLuint width, GLuint height);
 	~Game();
 	
-	// ¼ÓÔØ×ÊÔ´(×ÅÉ«Æ÷, ÎÆÀí), ³õÊ¼»¯ÓÎÏ·×´Ì¬
+	// åŠ è½½èµ„æº(ç€è‰²å™¨, çº¹ç†), åˆå§‹åŒ–æ¸¸æˆçŠ¶æ€
 	void Init();
 
-	// Ê¹ÓÃ´æ´¢ÔÚ keys Êı×éÖĞµÄÊı¾İÀ´´¦ÀíÓÃ»§ÊäÈë
+	// ä½¿ç”¨å­˜å‚¨åœ¨ keys æ•°ç»„ä¸­çš„æ•°æ®æ¥å¤„ç†ç”¨æˆ·è¾“å…¥
 	void ProcessInput(GLfloat dt);
 
 	void MouseMoveCallback(int x, int y);
 
 	void MouseClickCallback(int button, int state, int x, int y);
 
-	// ÔÚ¸Ãº¯ÊıÖĞ¸üĞÂÓÎÏ·×´Ì¬ÉèÖÃ,ÀıÈç¶¯ÎïµÄ×Ô¼ºÒÆ¶¯
+	// åœ¨è¯¥å‡½æ•°ä¸­æ›´æ–°æ¸¸æˆçŠ¶æ€è®¾ç½®,ä¾‹å¦‚åŠ¨ç‰©çš„è‡ªå·±ç§»åŠ¨
 	void Update(GLfloat dt);
 
-	// äÖÈ¾ÓÎÏ·
+	// æ¸²æŸ“æ¸¸æˆ
 	void Render();
 
 private:
