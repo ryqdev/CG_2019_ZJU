@@ -12,18 +12,18 @@ Tree::Tree(float x, float y, float z, float r0, float h0, float r1, float h1, fl
 	trunk[0] = r; trunk[1] = h;
 }
 
-//ÎÆÀí·½Ê½»æÖÆÊ÷Ä¾
+//çº¹ç†æ–¹å¼ç»˜åˆ¶æ ‘æœ¨
 TreeRender::TreeRender(){
-	//Ê÷Ä¾Î»ÖÃ
+	//æ ‘æœ¨ä½ç½®
 	for (int i = 0; i < N_TREE; i++) {
 		treelist[i][0] = rand() % 16;
 		treelist[i][1] = rand() % 16;
 	}
 }
 
-//×ÅÉ«Æ÷·½Ê½»æÖÆÊ÷Ä¾
+//ç€è‰²å™¨æ–¹å¼ç»˜åˆ¶æ ‘æœ¨
 TreeRender::TreeRender(Shader& shader) {
-	//Ê÷Ä¾Î»ÖÃ
+	//æ ‘æœ¨ä½ç½®
 	for (int i = 0; i < N_TREE; i++) {
 		treelist[i][0] = rand() % 16;
 		treelist[i][1] = rand() % 16;
@@ -31,32 +31,32 @@ TreeRender::TreeRender(Shader& shader) {
 	this->shader = shader;
 }
 
-//TODO ÓÃ×ÅÉ«Æ÷µÄÊ±ºò£¬ÓÃÓÚÅäÖÃ VAO Óë VBO µÈ
+//TODO ç”¨ç€è‰²å™¨çš„æ—¶å€™ï¼Œç”¨äºé…ç½® VAO ä¸ VBO ç­‰
 void TreeRender::initRenderData() {
 	//TODO 
-	//ÓÃ×ÅÉ«Æ÷µÄÊ±ºò£¬ÓÃÓÚÅäÖÃ VAO Óë VBO µÈ
+	//ç”¨ç€è‰²å™¨çš„æ—¶å€™ï¼Œç”¨äºé…ç½® VAO ä¸ VBO ç­‰
 }
 
 GLint TreeRender::createList(Tree& tree,Texture2D& trunk,Texture2D& leaves)
 {
-	GLint lid = glGenLists(1);//´´½¨Ò»¸öÏÔÊ¾ÁĞ±í
+	GLint lid = glGenLists(1);//åˆ›å»ºä¸€ä¸ªæ˜¾ç¤ºåˆ—è¡¨
 
 	// std::cout << "generate a lid: " << this->lid << std::endl;
 	glNewList(lid, GL_COMPILE);
 
-	//»­µÚÒ»²ãÊ÷Ò¶
+	//ç”»ç¬¬ä¸€å±‚æ ‘å¶
 	glPushMatrix();
 	glTranslatef(0, tree.trunk[1] + tree.leaf[1][1], 0);
 	drawLeaf(0,tree,trunk,leaves);
 	glPopMatrix();
 
-	//»­µÚ¶ş²ãÊ÷Ò¶
+	//ç”»ç¬¬äºŒå±‚æ ‘å¶
 	glPushMatrix();
 	glTranslatef(0, tree.trunk[1], 0);
 	drawLeaf(1, tree, trunk, leaves);
 	glPopMatrix();
 
-	//»­Ê÷¸É
+	//ç”»æ ‘å¹²
 	glPushMatrix();
 	drawTrunk(tree, trunk, leaves);
 	glPopMatrix();
@@ -72,7 +72,7 @@ void TreeRender::drawLeaf(int level, Tree& tree, Texture2D& trunk, Texture2D& le
 	float next;
 
 	glPushMatrix();
-	//°ó¶¨ÎÆÀí
+	//ç»‘å®šçº¹ç†
 	leaves.Bind();
 	
 	
@@ -82,7 +82,7 @@ void TreeRender::drawLeaf(int level, Tree& tree, Texture2D& trunk, Texture2D& le
 		next = angle + 1;
 		if (next > 2 * PI) next = 0;
 
-		//»­Ô²×¶²àÃæ
+		//ç”»åœ†é”¥ä¾§é¢
 		glTexCoord2i(0.5, 0);
 		glVertex3f(0, tree.leaf[level][1], 0);//0
 
@@ -92,7 +92,7 @@ void TreeRender::drawLeaf(int level, Tree& tree, Texture2D& trunk, Texture2D& le
 		glTexCoord2i(1, 1);
 		glVertex3f(r*sin(next), 0, r*cos(next));//2
 
-		//»­Ô²×¶µ×Ãæ
+		//ç”»åœ†é”¥åº•é¢
 		glTexCoord2i(0.5, 0);
 		glVertex3f(0, 0, 0);//0
 
@@ -118,7 +118,7 @@ void TreeRender::drawTrunk(Tree& tree, Texture2D& trunk, Texture2D& leaves) {
 	float r = tree.trunk[0];
 
 	glBegin(GL_QUADS);
-	//»­Ô²Öù²àÃæ
+	//ç”»åœ†æŸ±ä¾§é¢
 	for (float angle = 0; angle <= 2 * PI; angle += 2) {
 		next = angle +2;
 		if (next > 2 * PI) next = 0;
@@ -142,7 +142,7 @@ void TreeRender::drawTrunk(Tree& tree, Texture2D& trunk, Texture2D& leaves) {
 }
 
 void TreeRender::DrawTree(Tree& tree, Texture2D& trunk, Texture2D& leaves) {
-	//Éú³ÉÊ÷µÄ¶ÀÌØID
+	//ç”Ÿæˆæ ‘çš„ç‹¬ç‰¹ID
 	std::string id = to_string(trunk.ID) + to_string(leaves.ID) + to_string(tree.leaf[0][0])+ to_string(tree.leaf[0][1])
 		+ to_string(tree.leaf[1][0])+ to_string(tree.leaf[1][1])+ to_string(tree.trunk[0])+ to_string(tree.trunk[1]);
 	
@@ -155,7 +155,7 @@ void TreeRender::DrawTree(Tree& tree, Texture2D& trunk, Texture2D& leaves) {
 	}
 	else {	
 		lid = createList(tree,trunk,leaves);
-		cout << lid << endl;
+		//cout << lid << endl;
 		renderList.insert(std::pair<std::string, GLint>(id, lid));
 	}
 
