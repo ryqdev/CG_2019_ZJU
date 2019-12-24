@@ -74,6 +74,12 @@ For the sake of the correctness in README, Chinese will be used in the following
 
 * 修改地图生成方法，动态加载、卸载相机附近的区块
 
+## 2019年12月24日更新
+
+* 增加存储功能，进入游戏前在控制台输入新存档名
+* `file` 类:管理txt文件输入输出
+* I键读取旧存档，在控制台中输入存档名；U键新建存档
+
 ## To-Do list
 * 基础要求
 - [x] 建模:基于OpenGL/WebGL，具有基本体素(立方体、球、圆柱、圆锥、多 面棱柱、多面棱台)的建模表达能力
