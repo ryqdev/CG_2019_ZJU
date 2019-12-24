@@ -133,12 +133,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="block.cpp" />
+    <ClCompile Include="chunk\chunkManager.cpp" />
     <ClCompile Include="chunk\chunk.cpp" />
     <ClCompile Include="chunk\perlinNoise.cpp" />
-    <ClCompile Include="goldBlock.cpp" />
-    <ClCompile Include="grassBlock.cpp" />
-    <ClCompile Include="iceBlock.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cubeRender.cpp" />
     <ClCompile Include="game.cpp" />
@@ -155,14 +152,10 @@
     <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="block.h" />
-    <ClInclude Include="blockFactory.h" />
     <ClInclude Include="blockType.h" />
+    <ClInclude Include="chunk\chunkManager.h" />
     <ClInclude Include="chunk\chunk.h" />
     <ClInclude Include="chunk\perlinNoise.h" />
-    <ClInclude Include="goldBlock.h" />
-    <ClInclude Include="grassBlock.h" />
-    <ClInclude Include="iceblock.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cubeRender.h" />
     <ClInclude Include="game.h" />

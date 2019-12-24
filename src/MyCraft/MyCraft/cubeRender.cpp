@@ -6,163 +6,69 @@ CubeRender::CubeRender()
 {
 }
 
-CubeRender::CubeRender(Shader& shader)
+CubeRender::CubeRender(Shader& lineShader)
 {
-	this->shader = shader;
+	this->lineShader = lineShader;
 	this->initRenderData();
 }
 
 void CubeRender::initRenderData()
 {
-}
+	const float vertices[][3] = {
+		-1, -1, -1,
+		1, -1, -1,
+		1,  1, -1,
+		-1,  1, -1,
+		-1, -1,  1,
+		1, -1,  1,
+		1,  1,  1,
+		-1,  1,  1,
+	};
 
-GLint CubeRender::createList(Texture2D tex_up, Texture2D tex_side, Texture2D tex_down)
-{
-	GLint lid = glGenLists(1);
+	const int indices[] = {
+		0, 1, 0, 3, 0, 4,
+		1, 2, 1, 5, 2, 3,
+		2, 6, 3, 7, 4, 5,
+		4, 7, 5, 6, 6, 7
+	};
 
-	// std::cout << "generate a lid: " << this->lid << std::endl;
-	glNewList(lid, GL_COMPILE);
-
-	glPushMatrix();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	// bind the texture
-
-	tex_up.Bind();
-	glBegin(GL_QUADS);
-	glTexCoord2i(1, 1); glVertex3f(0.5f, 0.5f, 0.5f);
-	glTexCoord2i(0, 1); glVertex3f(-0.5f, 0.5f, 0.5f);
-	glTexCoord2i(0, 0); glVertex3f(-0.5f, 0.5f, -0.5f);
-	glTexCoord2i(1, 0); glVertex3f(0.5f, 0.5f, -0.5);
-	glEnd();
-
-	tex_side.Bind();
-	glBegin(GL_QUADS);
-	glTexCoord2i(1, 1); glVertex3f(0.5f, 0.5f, 0.5f);
-	glTexCoord2i(0, 1); glVertex3f(-0.5f, 0.5f, 0.5f);
-	glTexCoord2i(0, 0); glVertex3f(-0.5f, -0.5f, 0.5f);
-	glTexCoord2i(1, 0); glVertex3f(0.5f, -0.5f, 0.5);
-	glEnd();
-
-	tex_side.Bind();
-	glBegin(GL_QUADS);
-	glTexCoord2i(1, 1); glVertex3f(0.5f, 0.5f, -0.5f);
-	glTexCoord2i(0, 1); glVertex3f(-0.5f, 0.5f, -0.5f);
-	glTexCoord2i(0, 0); glVertex3f(-0.5f, -0.5f, -0.5f);
-	glTexCoord2i(1, 0); glVertex3f(0.5f, -0.5f, -0.5);
-	glEnd();
-
-	tex_side.Bind();
-	glBegin(GL_QUADS);
-	glTexCoord2i(1, 1); glVertex3f(0.5f, 0.5f, 0.5f);
-	glTexCoord2i(0, 1); glVertex3f(0.5f, -0.5f, 0.5f);
-	glTexCoord2i(0, 0); glVertex3f(0.5f, -0.5f, -0.5f);
-	glTexCoord2i(1, 0); glVertex3f(0.5f, 0.5f, -0.5);
-	glEnd();
-
-	tex_side.Bind();
-	glBegin(GL_QUADS);
-	glTexCoord2i(1, 1); glVertex3f(-0.5f, 0.5f, 0.5f);
-	glTexCoord2i(0, 1); glVertex3f(-0.5f, -0.5f, 0.5f);
-	glTexCoord2i(0, 0); glVertex3f(-0.5f, -0.5f, -0.5f);
-	glTexCoord2i(1, 0); glVertex3f(-0.5f, 0.5f, -0.5);
-	glEnd();
-
-	tex_down.Bind();
-	glBegin(GL_QUADS);
-	glTexCoord2i(1, 1); glVertex3f(0.5f, -0.5f, 0.5f);
-	glTexCoord2i(0, 1); glVertex3f(-0.5f, -0.5f, 0.5f);
-	glTexCoord2i(0, 0); glVertex3f(-0.5f, -0.5f, -0.5f);
-	glTexCoord2i(1, 0); glVertex3f(0.5f, -0.5f, -0.5);
-	glEnd();
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glPopMatrix();
-
-	glEndList();
-
-	return lid;
-}
-
-
-void CubeRender::drawCube(float x, float y, float z, Texture2D tex_up, Texture2D tex_side, Texture2D tex_down)
-{
-	std::string id = std::to_string(tex_up.ID) + std::to_string(tex_side.ID) + std::to_string(tex_down.ID);
-	GLint lid;
-
-	std::map<std::string, GLint>::iterator it;
-	it = this->renderList.find(id);
-	if (it != renderList.end())
-	{
-		lid = it->second;
-	}
-	else {
-		lid = createList(tex_up, tex_side, tex_down);
-		renderList.insert(std::pair<std::string, GLint>(id, lid));
+	float data[24*3];
+	for (int i = 0; i < 24; i++) {
+		data[i*3] = vertices[indices[i]][0]*0.6;
+		data[i*3+1] = vertices[indices[i]][1]*0.6;
+		data[i*3+2] = vertices[indices[i]][2]*0.6;
 	}
 
-	glPushMatrix();
-	glTranslatef(x, y, z);
+	// vao与vbo
+	glGenVertexArrays(1, &wireCubeVao);
+	glBindVertexArray(wireCubeVao);
 
-	glCallList(lid);
+	glGenBuffers(1, &wireCubeVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, wireCubeVbo);
 
-	glPopMatrix();
+	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void *)0);
+
+	glDrawArrays(GL_LINES, 0, 24);
+
+	glBindVertexArray(0);
 }
 
-void CubeRender::drawWireCube(float x, float y, float z)
+void CubeRender::drawWireCube(int x, int y, int z, glm::mat4 matrix)
 {
-	// glDisable(GL_LIGHTING);
-	glPushMatrix();
-	glTranslatef(x, y, z);
+	glm::mat4 model;
+	model = glm::translate(model, glm::vec3(0.5f * x, 0.5f * y, 0.5f * z)); 
 
-	this->drawWireCube(1.2f);
-	// bind the texture
+	lineShader.Use();
+	lineShader.SetMatrix4("matrix", model*matrix, false);
 
-	glPopMatrix();
-	// glEnable(GL_LIGHTING);
-
-}
-
-void CubeRender::drawWireCube(float size)
-{
-	size = size / 2;
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glBegin(GL_QUADS);
-
-	glVertex3f(size, size, size);
-	glVertex3f(-size, size, size);
-	glVertex3f(-size, -size, size);
-	glVertex3f(size, -size, size);
-
-	glVertex3f(size, size, -size);
-	glVertex3f(-size, size, -size);
-	glVertex3f(-size, -size, -size);
-	glVertex3f(size, -size, -size);
-
-	glVertex3f(size, size, size);
-	glVertex3f(size, -size, size);
-	glVertex3f(size, -size, -size);
-	glVertex3f(size, size, -size);
-
-	glVertex3f(-size, size, size);
-	glVertex3f(-size, -size, size);
-	glVertex3f(-size, -size, -size);
-	glVertex3f(-size, size, -size);
-
-	glVertex3f(size, size, size);
-	glVertex3f(-size, size, size);
-	glVertex3f(-size, size, -size);
-	glVertex3f(size, size, -size);
-
-	glVertex3f(size, -size, size);
-	glVertex3f(-size, -size, size);
-	glVertex3f(-size, -size, -size);
-	glVertex3f(size, -size, -size);
-
-	glEnd();
+	glBindVertexArray(wireCubeVao);
+	glDrawArrays(GL_LINES, 0, 24);
+	glBindVertexArray(0);
 
 	// 注意这里要还原成 GL_FILL, 保证多边形绘制模式是 GL_FILL
 	// 否则天空盒会有问题, 待解决
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 }

@@ -11,6 +11,8 @@
 
 using namespace std;
 
+class World;
+
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
 	FORWARD,
@@ -36,6 +38,7 @@ private:
 	glm::vec3 Up;
 	glm::vec3 Right;
 	glm::vec3 WorldUp;
+	glm::mat4 projectionMatrix;
 	// Eular Angles
 	GLfloat Yaw;
 	GLfloat Pitch;
@@ -72,10 +75,25 @@ public:
 		this->updateCameraVectors();
 	}
 
+	void setProjectionMatrix(glm::mat4 projectionMatrix)
+	{
+		this->projectionMatrix = projectionMatrix;
+	}
+
 	// Returns the view matrix calculated using Eular Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix()
 	{
 		return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
+	}
+
+	glm::mat4 getProjectionMatrix()
+	{
+		return projectionMatrix;
+	}
+
+	glm::mat4 getProjViewMatrix()
+	{
+		return projectionMatrix * GetViewMatrix();
 	}
 
 	void doMovement(GLboolean Keys[], World* world, GLfloat deltaTime);
@@ -91,12 +109,7 @@ public:
 
 	GLfloat getZooom();
 
-	void setLookAt()
-	{
-		gluLookAt(Position.x, Position.y, Position.z,
-			(Position + Front).x, (Position + Front).y, (Position + Front).z,
-			Up.x, Up.y, Up.z);
-	}
+	void setLookAt();
 
 private:
 

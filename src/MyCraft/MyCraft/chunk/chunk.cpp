@@ -35,7 +35,6 @@ void Chunk::genChunk()
 				h = t;
 			}
 
-			// 由于目前绘制效率过低，只生成两层
 			for (int y = 0; y < h; y++) {
 				int key = (y * CHUNK_SIZE + x) * CHUNK_SIZE + z;
 				blocks.insert(std::make_pair(key, GRASS));
@@ -107,18 +106,6 @@ void Chunk::genBuffer()
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void *)(6 * sizeof(float)));
 
 	dirty = false;
-}
-
-void Chunk::render()
-{
-	if (!loaded)
-		genChunk();
-
-	if (dirty)
-		genBuffer();
-
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, vertsNum);
 }
 
 // 获取指定位置的最大高度
@@ -193,6 +180,16 @@ void Chunk::removeBlock(int x, int y, int z)
 		blocks.erase(it);
 
 	dirty = true;
+}
+
+bool Chunk::isLoaded() const
+{
+	return loaded;
+}
+
+bool Chunk::isDirty() const
+{
+	return dirty;
 }
 
 // xyz为实际的xyz

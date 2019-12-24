@@ -2,7 +2,7 @@
 
 static int BlockTypeNum = 3; // 方块的种类数
 
-enum BlockType : uint8_t {
+enum BlockType {
 	GRASS,
 	ICE,
 	GOLD,

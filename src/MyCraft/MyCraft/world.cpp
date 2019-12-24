@@ -2,10 +2,6 @@
 #include "resource_manager.h"
 #include "light.h"
 
-int World::chunked(int x) {
-	return floor(float(x) / CHUNK_SIZE);
-}
-
 DirectionLight light(GL_LIGHT0);
 PointLight light1(GL_LIGHT1);
 PointLight light2(GL_LIGHT2);
@@ -18,64 +14,6 @@ World::World()
 	memset(mSpecularMaterial, 0, sizeof(mSpecularMaterial));
 }
 
-Chunk* World::findChunk(int x, int z)
-{
-	for (auto it = chunks.begin(); it != chunks.end(); it++) {
-		if ((*it)->X == x && (*it)->Z == z)
-			return (*it);
-	}
-	return nullptr;
-}
-
-void World::drawWireCube(int x, int y, int z, glm::mat4 matrix)
-{
-	const float vertices[][3] = {
-		-1, -1, -1,
-		 1, -1, -1,
-		 1,  1, -1,
-		-1,  1, -1,
-		-1, -1,  1,
-		 1, -1,  1,
-		 1,  1,  1,
-		-1,  1,  1,
-	};
-
-	const int indices[] = {
-		0, 1, 0, 3, 0, 4,
-		1, 2, 1, 5, 2, 3,
-		2, 6, 3, 7, 4, 5,
-		4, 7, 5, 6, 6, 7
-	};
-
-	float data[24*3];
-	for (int i = 0; i < 24; i++) {
-		data[i*3] = x+vertices[indices[i]][0]*0.6;
-		data[i*3+1] = y+vertices[indices[i]][1]*0.6;
-		data[i*3+2] = z+vertices[indices[i]][2]*0.6;
-	}
-
-	Shader s = ResourceManager::GetShader("shader_line");
-	s.Use();
-	s.SetMatrix4("matrix", matrix, false);
-
-	GLuint vao, vbo;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void *)0);
-
-	glDrawArrays(GL_LINES, 0, 24);
-
-	glBindVertexArray(0);
-
-	glUseProgram(0);
-}
-
 World::~World()
 {
 	// 释放渲染器
@@ -84,7 +22,11 @@ World::~World()
 	//释放树木渲染器
 	if ( treeRender!= nullptr)
 		delete treeRender;
+}
 
+ChunkManager& World::getChunkManager()
+{
+	return chunkManager;
 }
 
 void World::pick_block(int x, int y, int z)
@@ -98,56 +40,6 @@ void World::unpick_block()
 	picked = false;
 }
 
-BlockType World::get_block(int x, int y, int z)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c) return AIR;
-
-	return c->getBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE);
-}
-
-void World::put_block(int x, int y, int z, BlockType type)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c) return;
-
-	c->putBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE, type);
-}
-
-void World::remove_block(int x, int y, int z)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c) return;
-
-	c->removeBlock(x-X*CHUNK_SIZE, y, z-Z*CHUNK_SIZE);
-}
-
-int World::highest(int x, int z)
-{
-	int X = chunked(x), Z = chunked(z);
-	Chunk *c = findChunk(X, Z);
-	if (!c) return 0;
-
-	return c->highest(x-X*CHUNK_SIZE, z-Z*CHUNK_SIZE);
-}
-
-void World::Load()
-{
-	for (int i = -2; i <= 2; i++) {
-		for (int j = -2; j <= 2; j++) {
-			Chunk *chunk = new Chunk(i, j);
-			chunk->genChunk();
-			chunk->genBuffer();
-			chunks.push_back(chunk);
-		}
-	}
-
-	this->skyBox = SkyBox();
-}
-
 void World::init()
 {
 	// 初始化立方体渲染器
@@ -156,11 +48,19 @@ void World::init()
 	// 初始化树木渲染器
 	treeRender = new TreeRender();
 	
-	//初始化机器人
+	// 初始化机器人
 	robotRender=new RobotRender();
 
 	// 初始化天空盒
 	skyBox.init(ResourceManager::GetShader("shader_skybox"));
+
+	// 初始化区块
+	chunkManager.init(ResourceManager::GetShader("shader_chunk"));
+	for (int i = -2; i <= 2; i++) {
+		for (int j = -2; j <= 2; j++) {
+			chunkManager.getChunk(i, j);
+		}
+	}
 	
 	//设置光线参数
 	light.SetAmbientColor(0.6f, 0.6f, 0.6f, 1.0f);
@@ -216,58 +116,27 @@ void World::SetSpecularMaterial(float r, float g, float b, float a) {
 	mSpecularMaterial[3] = a;
 }
 
-
-void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
+void World::render(Camera& camera)
 {
 	// 渲染天空盒
 	skyBox.render();
 
+	chunkManager.render(camera.Position, camera.getProjViewMatrix());
+
 	glEnable(GL_CULL_FACE);
 
-	// 删除位于删除半径外的区块
-	int cX = chunked(cameraPos.x);
-	int cZ = chunked(cameraPos.z);
-	for (auto it = chunks.begin(); it != chunks.end(); ) {
-		if (max(abs((*it)->X-cX), abs((*it)->Z-cZ)) > DESTROY_RADIUS) {
-			delete (*it);
-			it = chunks.erase(it);
-		} else {
-			it++;
-		}
-	}
-	
-	// 更新并渲染区块
-	Shader s = ResourceManager::GetShader("shader_chunk");
-	s.Use();
-	s.SetInteger("tex", 0);
-	s.SetMatrix4("matrix", matrix);
 
-	Texture2DArray textureArray = ResourceManager::GetTextureArray("blocks");
-	textureArray.Bind();
-
-	for (int i = -CREATE_RADIUS; i <= CREATE_RADIUS; i++) {
-		for (int j = -CREATE_RADIUS; j <= CREATE_RADIUS; j++) {
-			Chunk* c = findChunk(cX+i, cZ+j);
-			// 如果指定位置不存在区块，则创建或载入一个区块
-			if (!c) {
-				c = new Chunk(cX+i, cZ+j);
-				chunks.push_back(c);
-			}
-			c->render();
-		}
+	if (picked) {
+		cubeRender->drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z, camera.getProjViewMatrix());
 	}
 
 	glUseProgram(0);
-
-	if (picked) {
-		drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z, matrix);
-	}
-
+	
 	//渲染树木 最多N_TREE数量树木
 	Texture2D trunk= ResourceManager::GetTexture("trunk");
 	Texture2D leaves = ResourceManager::GetTexture("leaves");
 	for (int i = 0; i < N_TREE; i++) {
-		Tree t(treeRender->treelist[i][0], highest(treeRender->treelist[i][0], treeRender->treelist[i][1]), treeRender->treelist[i][1]);
+		Tree t(treeRender->treelist[i][0], chunkManager.highest(treeRender->treelist[i][0], treeRender->treelist[i][1]), treeRender->treelist[i][1]);
 		treeRender->DrawTree(t, trunk, leaves);
 	}
 	
@@ -276,7 +145,7 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 		robotRender->robotList[i].randomMove();
 		float x = robotRender->robotList[i].x;
 		float z = robotRender->robotList[i].z;
-		robotRender->robotList[i].setLocation(x,highest(x,z),z);
+		robotRender->robotList[i].setLocation(x,chunkManager.highest(x,z),z);
 		robotRender->DrawRobot(robotRender->robotList[i]);
 	}
 	

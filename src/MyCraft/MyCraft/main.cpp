@@ -25,8 +25,7 @@ void reshape(int w, int h)
 {
 	screenWidth = w;
 	screenHeight = h;
-	MineCraft.Width = w;
-	MineCraft.Height = h;
+	MineCraft.Reshape(w, h);
 	glViewport(0, 0, w, h);
 }
 

@@ -46,6 +46,9 @@ public:
 
 	void MouseClickCallback(int button, int state, int x, int y);
 
+	// 窗口改变时更新摄像机状态
+	void Reshape(int w, int h);
+
 	// 在该函数中更新游戏状态设置,例如动物的自己移动
 	void Update(GLfloat dt);
 

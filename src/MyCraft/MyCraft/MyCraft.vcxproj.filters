@@ -11,24 +11,13 @@
     <ClCompile Include="world.cpp" />
     <ClCompile Include="mousePicker.cpp" />
     <ClCompile Include="screenshot.cpp" />
-    <ClCompile Include="cubeRender.cpp" />
-    <ClCompile Include="block.cpp">
-      <Filter>blocks</Filter>
-    </ClCompile>
-    <ClCompile Include="goldBlock.cpp">
-      <Filter>blocks</Filter>
-    </ClCompile>
-    <ClCompile Include="grassBlock.cpp">
-      <Filter>blocks</Filter>
-    </ClCompile>
-    <ClCompile Include="iceBlock.cpp">
-      <Filter>blocks</Filter>
-    </ClCompile>
     <ClCompile Include="chunk\chunk.cpp" />
     <ClCompile Include="chunk\perlinNoise.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="robot.cpp" />
+    <ClCompile Include="chunk\chunkManager.cpp" />
+    <ClCompile Include="cubeRender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -40,23 +29,7 @@
     <ClInclude Include="world.h" />
     <ClInclude Include="mousePicker.h" />
     <ClInclude Include="screenshot.h" />
-    <ClInclude Include="cubeRender.h" />
-    <ClInclude Include="blockFactory.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="block.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
     <ClInclude Include="blockType.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="goldBlock.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="grassBlock.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="iceblock.h">
       <Filter>blocks</Filter>
     </ClInclude>
     <ClInclude Include="chunk\chunk.h" />
@@ -64,6 +37,8 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="robot.h" />
+    <ClInclude Include="chunk\chunkManager.h" />
+    <ClInclude Include="cubeRender.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blocks">
