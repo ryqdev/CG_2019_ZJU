@@ -111,6 +111,31 @@ void keyDown(unsigned char key, int x, int y)
 		ptminfo = localtime(&rawtime);
 		Screenshot::save_img(ptminfo);
 	}
+
+	if (key == 'u' || key == 'U') {
+		MineCraft.Init();
+		MineCraft.file.Init();
+	}
+	if (key == 'i' || key == 'I')
+	{
+		MineCraft.Init();
+		MineCraft.file.ReadFile();
+		for (int i = 0; i < MineCraft.file.vx.size(); i++) {
+			int ix = MineCraft.file.vx[i], iy = MineCraft.file.vy[i], iz = MineCraft.file.vz[i];
+			//if (MineCraft.file.vtype[i] == -1) {
+			//	MineCraft.world->remove_block(ix, iy, iz);
+			//}
+			//else {
+			//	MineCraft.world->put_block(ix, iy, iz, BlockType(i));
+			//}
+			switch (MineCraft.file.vtype[i]) {
+			case -1:MineCraft.world->remove_block(ix, iy, iz); break;
+			case 0:MineCraft.world->put_block(ix, iy, iz, GRASS); break;
+			case 1:MineCraft.world->put_block(ix, iy, iz, ICE); break;
+			case 2:MineCraft.world->put_block(ix, iy, iz, GOLD); break;
+			}
+		}
+	}
 }
 
 void keyUp(unsigned char key, int x, int y)
@@ -129,6 +154,8 @@ void init()
 
 								// 初始化游戏
 	MineCraft.Init();
+	//创建文件
+	MineCraft.file.Init();
 
 	timer(0);
 }

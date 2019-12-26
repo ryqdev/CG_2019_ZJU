@@ -58,11 +58,13 @@ void Game::Init()
 
 	// 新建一个 world 对象
 	this->world = new World();
+	// 载入世界资源
+	this->world->Load();
 	// 初始化世界
 	this->world->init();
 
 	// 创建一个照相机
-	this->camera = new Camera(glm::vec3(3.0f, this->world->getChunkManager().highest(3, 3)+2.5f, 3.0f));
+	this->camera = new Camera(glm::vec3(3.0f, this->world->highest(3, 3)+2.5f, 3.0f));
 
 	// 创建鼠标拾取器
 	// this->mousePicker = new MousePicker(this->camera, glm::make_mat4(projectionMatrix));
@@ -94,8 +96,12 @@ void Game::Render()
 	//设置视点
 	camera->setLookAt();
 
+	glm::mat4 view = camera->GetViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)Width / Height, 0.125f, 100.0f);
+	glm::mat4 matrix = projection * view;
+
 	// 渲染世界
-	world->render(*camera);
+	world->render(matrix, camera->Position);
 
 	// 测试鼠标射线
 	this->mousePicker->render_ray();
@@ -132,7 +138,7 @@ void Game::MouseMoveCallback(int xpos, int ypos)
 		x = roundf(ray.x * u + camera->Position.x);
 		y = roundf(ray.y * u + camera->Position.y);
 		z = roundf(ray.z * u + camera->Position.z);
-		if (world->getChunkManager().getBlock(x, y, z) != AIR) {
+		if (world->get_block(x, y, z) != AIR) {
 			if (block_last_x == x && block_last_y == y && block_last_z == z) {
 				// cout << "已经选中了"<< endl;
 			}
@@ -165,7 +171,7 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 			}
 			pos = pos + p;
 
-			if (world->getChunkManager().getBlock(pos.x, pos.y, pos.z) == AIR) {	// 当前位置没有方块
+			if (world->get_block(pos.x, pos.y, pos.z) == AIR) {	// 当前位置没有方块
 				if (glm::abs(camera->Position.x - pos.x) < 0.6
 					&& glm::abs(camera->Position.z - pos.z) < 0.6
 					&& pos.y + 0.3 > camera->Position.y - 1.3
@@ -173,14 +179,16 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 					return;
 				}
 				// cout << "放在了:" << pos.x << " " << pos.y << " " << pos.z << endl;
-				world->getChunkManager().putBlock(pos.x, pos.y, pos.z, currentType);
+				world->put_block(pos.x, pos.y, pos.z, currentType);
+				file.WriteCube(pos.x, pos.y, pos.z, currentType);
 			}
 		}
 	}
 	else if (button == GLUT_RIGHT_BUTTON) {		// 消除方块
 		if (state == GLUT_DOWN) {
-			if (world->getChunkManager().getBlock(block_last_x, block_last_y, block_last_z) != AIR) {
-				world->getChunkManager().removeBlock(block_last_x, block_last_y, block_last_z);
+			if (world->get_block(block_last_x, block_last_y, block_last_z) != AIR) {
+				world->remove_block(block_last_x, block_last_y, block_last_z);
+				file.RemoveCube(block_last_x, block_last_y, block_last_z);
 			}
 		}
 	}

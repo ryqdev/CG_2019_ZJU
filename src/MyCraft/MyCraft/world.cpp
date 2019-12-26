@@ -14,6 +14,15 @@ World::World()
 	memset(mSpecularMaterial, 0, sizeof(mSpecularMaterial));
 }
 
+Chunk* World::findChunk(int x, int z)
+{
+	for (auto it = chunks.begin(); it != chunks.end(); it++) {
+		if ((*it)->X == x && (*it)->Z == z)
+			return (*it);
+	}
+	return nullptr;
+}
+
 World::~World()
 {
 	// 释放渲染器
@@ -40,6 +49,56 @@ void World::unpick_block()
 	picked = false;
 }
 
+BlockType World::get_block(int x, int y, int z)
+{
+	int X = chunkManager.chunked(x), Z = chunkManager.chunked(z);
+	Chunk* c = findChunk(X, Z);
+	if (!c) return AIR;
+
+	return c->getBlock(x - X * CHUNK_SIZE, y, z - Z * CHUNK_SIZE);
+}
+
+void World::put_block(int x, int y, int z, BlockType type)
+{
+	int X = chunkManager.chunked(x), Z = chunkManager.chunked(z);
+	Chunk* c = findChunk(X, Z);
+	if (!c) return;
+
+	c->putBlock(x - X * CHUNK_SIZE, y, z - Z * CHUNK_SIZE, type);
+}
+
+void World::remove_block(int x, int y, int z)
+{
+	int X = chunkManager.chunked(x), Z = chunkManager.chunked(z);
+	Chunk* c = findChunk(X, Z);
+	if (!c) return;
+
+	c->removeBlock(x - X * CHUNK_SIZE, y, z - Z * CHUNK_SIZE);
+}
+
+int World::highest(int x, int z)
+{
+	int X = chunkManager.chunked(x), Z = chunkManager.chunked(z);
+	Chunk* c = findChunk(X, Z);
+	if (!c) return 0;
+
+	return c->highest(x - X * CHUNK_SIZE, z - Z * CHUNK_SIZE);
+}
+
+void World::Load()
+{
+	for (int i = -2; i <= 2; i++) {
+		for (int j = -2; j <= 2; j++) {
+			Chunk* chunk = new Chunk(i, j);
+			chunk->genChunk();
+			chunk->genBuffer();
+			chunks.push_back(chunk);
+		}
+	}
+
+	this->skyBox = SkyBox();
+}
+
 void World::init()
 {
 	// 初始化立方体渲染器
@@ -54,13 +113,13 @@ void World::init()
 	// 初始化天空盒
 	skyBox.init(ResourceManager::GetShader("shader_skybox"));
 
-	// 初始化区块
-	chunkManager.init(ResourceManager::GetShader("shader_chunk"));
-	for (int i = -2; i <= 2; i++) {
-		for (int j = -2; j <= 2; j++) {
-			chunkManager.getChunk(i, j);
-		}
-	}
+	//// 初始化区块
+	//chunkManager.init(ResourceManager::GetShader("shader_chunk"));
+	//for (int i = -2; i <= 2; i++) {
+	//	for (int j = -2; j <= 2; j++) {
+	//		chunkManager.getChunk(i, j);
+	//	}
+	//}
 	
 	//设置光线参数
 	light.SetAmbientColor(0.6f, 0.6f, 0.6f, 1.0f);
@@ -116,18 +175,53 @@ void World::SetSpecularMaterial(float r, float g, float b, float a) {
 	mSpecularMaterial[3] = a;
 }
 
-void World::render(Camera& camera)
+//void World::render(Camera& camera)
+void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 {
 	// 渲染天空盒
 	skyBox.render();
 
-	chunkManager.render(camera.Position, camera.getProjViewMatrix());
+	glEnable(GL_CULL_FACE);
+
+	// 删除位于删除半径外的区块
+	int cX = chunkManager.chunked(cameraPos.x);
+	int cZ = chunkManager.chunked(cameraPos.z);
+	for (auto it = chunks.begin(); it != chunks.end(); ) {
+		if (max(abs((*it)->X - cX), abs((*it)->Z - cZ)) > DESTROY_RADIUS) {
+			delete (*it);
+			it = chunks.erase(it);
+		}
+		else {
+			it++;
+		}
+	}
+
+	// 更新并渲染区块
+	Shader s = ResourceManager::GetShader("shader_chunk");
+	s.Use();
+	s.SetInteger("tex", 0);
+	s.SetMatrix4("matrix", matrix);
+
+	Texture2DArray textureArray = ResourceManager::GetTextureArray("blocks");
+	textureArray.Bind();
+
+	for (int i = -CREATE_RADIUS; i <= CREATE_RADIUS; i++) {
+		for (int j = -CREATE_RADIUS; j <= CREATE_RADIUS; j++) {
+			Chunk* c = findChunk(cX + i, cZ + j);
+			// 如果指定位置不存在区块，则创建或载入一个区块
+			if (!c) {
+				c = new Chunk(cX + i, cZ + j);
+				chunks.push_back(c);
+			}
+			c->render();
+		}
+	}
 
 	glEnable(GL_CULL_FACE);
 
 
 	if (picked) {
-		cubeRender->drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z, camera.getProjViewMatrix());
+		cubeRender->drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z, matrix);
 	}
 
 	glUseProgram(0);
@@ -136,7 +230,7 @@ void World::render(Camera& camera)
 	Texture2D trunk= ResourceManager::GetTexture("trunk");
 	Texture2D leaves = ResourceManager::GetTexture("leaves");
 	for (int i = 0; i < N_TREE; i++) {
-		Tree t(treeRender->treelist[i][0], chunkManager.highest(treeRender->treelist[i][0], treeRender->treelist[i][1]), treeRender->treelist[i][1]);
+		Tree t(treeRender->treelist[i][0], highest(treeRender->treelist[i][0], treeRender->treelist[i][1]), treeRender->treelist[i][1]);
 		treeRender->DrawTree(t, trunk, leaves);
 	}
 	
@@ -145,7 +239,7 @@ void World::render(Camera& camera)
 		robotRender->robotList[i].randomMove();
 		float x = robotRender->robotList[i].x;
 		float z = robotRender->robotList[i].z;
-		robotRender->robotList[i].setLocation(x,chunkManager.highest(x,z),z);
+		robotRender->robotList[i].setLocation(x,highest(x,z),z);
 		robotRender->DrawRobot(robotRender->robotList[i]);
 	}
 	

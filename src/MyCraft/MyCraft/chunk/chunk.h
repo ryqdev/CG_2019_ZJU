@@ -22,6 +22,7 @@ public:
 
 	void genChunk();	// 生成或载入区块
 	void genBuffer();	// 生成并绑定buffer
+	void render();
 
 	int highest(int x, int z);	// 获取指定位置的最大高度
 

@@ -138,6 +138,7 @@
     <ClCompile Include="chunk\perlinNoise.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cubeRender.cpp" />
+    <ClCompile Include="file.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="chunk\perlinNoise.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cubeRender.h" />
+    <ClInclude Include="file.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="mousePicker.h" />

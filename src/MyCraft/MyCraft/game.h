@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "world.h"
 #include "mousePicker.h"
+#include "file.h"
 
 // Represents the current state of the game
 enum GameState {
@@ -29,6 +30,8 @@ public:
 	MousePicker* mousePicker;
 
 	World* world;
+
+	File file;
 
 	void nextBlcokType();
 

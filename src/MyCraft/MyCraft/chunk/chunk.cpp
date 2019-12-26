@@ -108,6 +108,18 @@ void Chunk::genBuffer()
 	dirty = false;
 }
 
+void Chunk::render()
+{
+	if (!loaded)
+		genChunk();
+
+	if (dirty)
+		genBuffer();
+
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, vertsNum);
+}
+
 // 获取指定位置的最大高度
 int Chunk::highest(int x, int z)
 {

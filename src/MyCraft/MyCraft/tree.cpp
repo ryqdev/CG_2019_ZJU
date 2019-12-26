@@ -155,7 +155,7 @@ void TreeRender::DrawTree(Tree& tree, Texture2D& trunk, Texture2D& leaves) {
 	}
 	else {	
 		lid = createList(tree,trunk,leaves);
-		cout << lid << endl;
+		//cout << lid << endl;
 		renderList.insert(std::pair<std::string, GLint>(id, lid));
 	}
 
