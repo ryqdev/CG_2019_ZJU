@@ -74,6 +74,13 @@ For the sake of the correctness in README, Chinese will be used in the following
 
 * 修改地图生成方法，动态加载、卸载相机附近的区块
 
+## 2019年12月26日更新
+
+* 增加存储功能，开始游戏前在控制台输入存档名，在save文件夹中创建txt文件
+* 游戏中I键打开旧存档，U键开始新存档，在控制台中输入存档名
+* 若在chunkManager类中定义chunks，更新游戏时无法渲染方块，暂时放回world类中定义chunks
+* `file` 类:控制文件的创建输入输出
+
 ## To-Do list
 * 基础要求
 - [x] 建模:基于OpenGL/WebGL，具有基本体素(立方体、球、圆柱、圆锥、多 面棱柱、多面棱台)的建模表达能力
