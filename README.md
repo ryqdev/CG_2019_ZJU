@@ -49,7 +49,8 @@ For the sake of the correctness in README, Chinese will be used in the following
 
 ## 2019年12月14日更新
 - 对MyCraft工程的.h文件和.cpp文件归档整理，以后大家就在那两个文件夹里添加类
-- 导入Opencv库，用以增加截屏功能，[opencv导入教程](https://blog.csdn.net/weixin_43085694/article/details/103537012)
+- ～～导入Opencv库，用以增加截屏功能，[opencv导入教程](https://blog.csdn.net/weixin_43085694/article/details/103537012)～～
+- 可以不用opencv
 - 添加了screenshot.h和screenshot.cpp两个文件，在main函数的Key函数中添加了'P'键截屏，并且保存在指定文档中
 
 ## 2019年12月16日更新
@@ -97,7 +98,7 @@ For the sake of the correctness in README, Chinese will be used in the following
 - [ ] 采用HTML5/IOS/Android移动平台实现
 - [x] 构建了基于此引擎的完整三维游戏，具有可玩性
 - [ ] 与虚拟现实/增强现实应用结合
-- [ ] 具有一定的对象表达能力，能够表达门、窗、墙等;
+- [x] 具有一定的对象表达能力，能够表达门、窗、墙等;
 - [ ] 复杂材质效果
 
 
