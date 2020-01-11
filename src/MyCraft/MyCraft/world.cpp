@@ -1,17 +1,23 @@
 #include "world.h"
 #include "resource_manager.h"
 #include "light.h"
-
-DirectionLight light(GL_LIGHT0);
-PointLight light1(GL_LIGHT1);
-PointLight light2(GL_LIGHT2);
-SpotLight light3(GL_LIGHT3);
-
+#include <glm\gtx\string_cast.hpp>
+#define Sin(x)  sin(x* 3.1415926 /180.0)
+#define Cos(x)  cos(x * 3.1415926 / 180.0)
+//DirectionLight light(GL_LIGHT0);
+//PointLight light1(GL_LIGHT1);
+//PointLight light2(GL_LIGHT2);
+//SpotLight light3(GL_LIGHT3);
+glm::vec3 light(1.0, 0.8, 0.8);//ç¯å…‰çš„ä¿¡æ¯
+glm::vec3 lightpos(20, 20, 20);//ç¯å…‰ä½ç½®
+glm::vec3 ambient, diffuse, specular;//æè´¨çš„ä¿¡æ¯
+float shiness = 32.0f;//ç¯å…‰çš„å‚æ•°
+glm::vec3 treepos[N_TREE];
 World::World()
 {
-	memset(mAmbientMaterial, 0, sizeof(mAmbientMaterial));
-	memset(mDiffuseMaterial, 0, sizeof(mDiffuseMaterial));
-	memset(mSpecularMaterial, 0, sizeof(mSpecularMaterial));
+	//memset(mAmbientMaterial, 0, sizeof(mAmbientMaterial));
+	//memset(mDiffuseMaterial, 0, sizeof(mDiffuseMaterial));
+	//memset(mSpecularMaterial, 0, sizeof(mSpecularMaterial));
 }
 
 Chunk* World::findChunk(int x, int z)
@@ -25,12 +31,16 @@ Chunk* World::findChunk(int x, int z)
 
 World::~World()
 {
-	// ÊÍ·ÅäÖÈ¾Æ÷
+	// é‡Šæ”¾æ¸²æŸ“å™¨
 	if (cubeRender != nullptr)
 		delete cubeRender;
-	//ÊÍ·ÅÊ÷Ä¾äÖÈ¾Æ÷
-	if ( treeRender!= nullptr)
+	//é‡Šæ”¾æ ‘æœ¨æ¸²æŸ“å™¨
+
+	if (treeRender != nullptr)
 		delete treeRender;
+
+
+
 }
 
 ChunkManager& World::getChunkManager()
@@ -41,7 +51,7 @@ ChunkManager& World::getChunkManager()
 void World::pick_block(int x, int y, int z)
 {
 	picked = true;
-	pickedBlock = {x, y, z};
+	pickedBlock = { x, y, z };
 }
 
 void World::unpick_block()
@@ -101,89 +111,169 @@ void World::Load()
 
 void World::init()
 {
-	// ³õÊ¼»¯Á¢·½ÌåäÖÈ¾Æ÷
+	// åˆå§‹åŒ–ç«‹æ–¹ä½“æ¸²æŸ“å™¨
 	cubeRender = new CubeRender();
-	
-	// ³õÊ¼»¯Ê÷Ä¾äÖÈ¾Æ÷
-	treeRender = new TreeRender();
-	
-	// ³õÊ¼»¯»úÆ÷ÈË
-	robotRender=new RobotRender();
 
-	// ³õÊ¼»¯Ìì¿ÕºĞ
+	// åˆå§‹åŒ–æ ‘æœ¨æ¸²æŸ“å™¨
+//	treeRender = new TreeRender[N_TREE]();
+
+	// åˆå§‹åŒ–æœºå™¨äºº
+	robotRender = new RobotRender();
+
+	// åˆå§‹åŒ–å¤©ç©ºç›’
 	skyBox.init(ResourceManager::GetShader("shader_skybox"));
 
-	//// ³õÊ¼»¯Çø¿é
+	sence = ResourceManager::GetShader("shader_sence");
+
+	trunk = ResourceManager::GetTexture("trunk");
+	leaves = ResourceManager::GetTexture("leaves");
+
+	sun = ResourceManager::GetTexture("sun");
+	earth = ResourceManager::GetTexture("earth");
+	moon = ResourceManager::GetTexture("moon");
+	chunkshader = ResourceManager::GetShader("shader_chunk");
+	//åˆå§‹åŒ–æ ‘
+		//æ ‘æœ¨ä½ç½®
+	float treelist[N_TREE][2];
+
+	for (int i = 0; i < N_TREE; i++) {
+		treelist[i][0] = 100 - rand() % 200;
+		treelist[i][1] = 100 - rand() % 200;
+		//æ ‘çš„ä½ç½®
+		treepos[i] = glm::vec3(treelist[i][0], highest(treelist[i][0], treelist[i][1]), treelist[i][1]);
+	}
+
+	treeRender = new TreeRender();
+	Tree tree;
+	treeRender->initRenderData(tree);
+
+
+	//// åˆå§‹åŒ–åŒºå—
 	//chunkManager.init(ResourceManager::GetShader("shader_chunk"));
 	//for (int i = -2; i <= 2; i++) {
 	//	for (int j = -2; j <= 2; j++) {
 	//		chunkManager.getChunk(i, j);
 	//	}
 	//}
-	
-	//ÉèÖÃ¹âÏß²ÎÊı
-	light.SetAmbientColor(0.6f, 0.6f, 0.6f, 1.0f);
-	light.SetDiffuseColor(0.8f, 0.8f, 0.8f, 1.0f);
-	light.SetSpecularColor(0.1f, 0.1f, 0.1f, 1.0f);
-	light.SetPosition(1.0, -1.0, -1.0f);
 
-	light1.SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
-	light1.SetDiffuseColor(0.2f, 1.0f, 0.6f, 1.0f);
-	light1.SetSpecularColor(0.1f, 0.1f, 0.1f, 1.0f);
-	light1.SetPosition(0.0f, 1.0f, 0.0f);
-	light1.SetConstAttenuation(1.0f);
-	light1.SetLinearAttenuation(0.2f);
+	//è®¾ç½®å…‰çº¿å‚æ•°
+	//light.SetAmbientColor(0.6f, 0.6f, 0.6f, 1.0f);
+	//light.SetDiffuseColor(0.8f, 0.8f, 0.8f, 1.0f);
+	//light.SetSpecularColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//light.SetPosition(1.0, -1.0, -1.0f);
 
-	light2.SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
-	light2.SetDiffuseColor(0.1f, 0.4f, 0.6f, 1.0f);
-	light2.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	light2.SetPosition(0.0f, 0.0f, -30.0f);
-	light2.SetConstAttenuation(1.0f);
-	light2.SetLinearAttenuation(0.2f);
+	//light1.SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//light1.SetDiffuseColor(0.2f, 1.0f, 0.6f, 1.0f);
+	//light1.SetSpecularColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//light1.SetPosition(0.0f, 1.0f, 0.0f);
+	//light1.SetConstAttenuation(1.0f);
+	//light1.SetLinearAttenuation(0.2f);
 
-	light3.SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
-	light3.SetDiffuseColor(0.1f, 0.4f, 0.6f, 1.0f);
-	light3.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	light3.SetPosition(0.0f, 50.0f, 0.0f);
-	light3.SetDirection(0.0f, -1.0f, 0.0f);
-	light3.SetExponent(5.0f);
-	light3.SetCutoff(10.0f);
+	//light2.SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//light2.SetDiffuseColor(0.1f, 0.4f, 0.6f, 1.0f);
+	//light2.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//light2.SetPosition(0.0f, 0.0f, -30.0f);
+	//light2.SetConstAttenuation(1.0f);
+	//light2.SetLinearAttenuation(0.2f);
 
-	SetAmbientMaterial(0.6f, 0.6f, 0.6f, 1.0f);
-	SetDiffuseMaterial(0.4f, 0.4f, 0.4f, 1.0f);
-	SetSpecularMaterial(0.1f, 0.1f, 0.1f, 1.0f);
+	//light3.SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+	//light3.SetDiffuseColor(0.1f, 0.4f, 0.6f, 1.0f);
+	//light3.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//light3.SetPosition(0.0f, 50.0f, 0.0f);
+	//light3.SetDirection(0.0f, -1.0f, 0.0f);
+	//light3.SetExponent(5.0f);
+	//light3.SetCutoff(10.0f);
+
+	//SetAmbientMaterial(0.6f, 0.6f, 0.6f, 1.0f);
+	//SetDiffuseMaterial(0.4f, 0.4f, 0.4f, 1.0f);
+	//SetSpecularMaterial(0.1f, 0.1f, 0.1f, 1.0f);
 }
 
-void World::SetAmbientMaterial(float r, float g, float b, float a) {
-	mAmbientMaterial[0] = r;
-	mAmbientMaterial[1] = g;
-	mAmbientMaterial[2] = b;
-	mAmbientMaterial[3] = a;
-}
-
-void World::SetDiffuseMaterial(float r, float g, float b, float a) {
-	mDiffuseMaterial[0] = r;
-	mDiffuseMaterial[1] = g;
-	mDiffuseMaterial[2] = b;
-	mDiffuseMaterial[3] = a;
-}
-
-void World::SetSpecularMaterial(float r, float g, float b, float a) {
-	mSpecularMaterial[0] = r;
-	mSpecularMaterial[1] = g;
-	mSpecularMaterial[2] = b;
-	mSpecularMaterial[3] = a;
-}
+//void World::SetAmbientMaterial(float r, float g, float b, float a) {
+//	mAmbientMaterial[0] = r;
+//	mAmbientMaterial[1] = g;
+//	mAmbientMaterial[2] = b;
+//	mAmbientMaterial[3] = a;
+//}
+//
+//void World::SetDiffuseMaterial(float r, float g, float b, float a) {
+//	mDiffuseMaterial[0] = r;
+//	mDiffuseMaterial[1] = g;
+//	mDiffuseMaterial[2] = b;
+//	mDiffuseMaterial[3] = a;
+//}
+//
+//void World::SetSpecularMaterial(float r, float g, float b, float a) {
+//	mSpecularMaterial[0] = r;
+//	mSpecularMaterial[1] = g;
+//	mSpecularMaterial[2] = b;
+//	mSpecularMaterial[3] = a;
+//}
 
 //void World::render(Camera& camera)
-void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
+//void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
+float ra = 0;
+void World::render(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos)
 {
-	// äÖÈ¾Ìì¿ÕºĞ
+	// æ¸²æŸ“å¤©ç©ºç›’
 	skyBox.render();
 
+	lightpos.x = 20 * Sin(ra);
+	lightpos.y = 20;
+	lightpos.z = 20 * Cos(ra);
+	//light.x = 0.3 + Sin(ra / 2);
+	//light.y = 0.3 + Sin(ra / 2);
+	//light.z = 0.3 + Sin(ra / 2);
+	ra += 1;
+	if (ra > 360)
+		ra -= 360;
+	
+
+	sence.Use();
+	//Shader r = ResourceManager::GetShader("shader_robot");
+	//r.Use();
+	//r.SetMatrix4("project", projection);
+	//r.SetMatrix4("view", view);
+
+	ambient = glm::vec3(0.7895, 0.8, 0.88);
+	diffuse = glm::vec3(0.2, 1, 0.5);
+	specular = glm::vec3(1, 1, 1);
+	sence.SetVector3f("ambient", ambient);
+	sence.SetVector3f("diffuse", diffuse);
+	sence.SetVector3f("specular", specular);
+
+	//æ¸²æŸ“robot
+	for (int i = 0; i < N_ROBOT; i++) {
+		robotRender->robotList[i].randomMove();
+		float x = robotRender->robotList[i].x;
+		float z = robotRender->robotList[i].z;
+		robotRender->robotList[i].setLocation(x, highest(x, z), z);
+		Robot robot = robotRender->robotList[i];
+
+		robotRender->DrawRobot(sence, robot, earth, moon);
+
+
+
+		//glm::mat4 model(1.0);
+		//model = glm::translate(model, glm::vec3(robot.x, robot.y, robot.z));
+		//model = glm::rotate(model, robot.vangle, glm::vec3(0, 1, 0));
+		//model = glm::scale(model, glm::vec3(robot.size, robot.size, robot.size));
+		//std::cout << robot.size << std::endl;
+		//	std::cout << glm::to_string(model) << std::endl;
+	//	r.SetMatrix4("model", model);
+		//	glCallList(lid);
+
+	//	glBindVertexArray(robotRender->vao);
+	//	glDrawArrays(GL_TRIANGLES, 0, robotRender->count);
+	//	glBindVertexArray(0);
+
+		//robotRender->DrawRobot(r, robotRender->robotList[i]);
+	}
+	glUseProgram(0);
 	glEnable(GL_CULL_FACE);
 
-	// É¾³ıÎ»ÓÚÉ¾³ı°ë¾¶ÍâµÄÇø¿é
+
+	// åˆ é™¤ä½äºåˆ é™¤åŠå¾„å¤–çš„åŒºå—
 	int cX = chunkManager.chunked(cameraPos.x);
 	int cZ = chunkManager.chunked(cameraPos.z);
 	for (auto it = chunks.begin(); it != chunks.end(); ) {
@@ -196,19 +286,38 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 		}
 	}
 
-	// ¸üĞÂ²¢äÖÈ¾Çø¿é
-	Shader s = ResourceManager::GetShader("shader_chunk");
-	s.Use();
-	s.SetInteger("tex", 0);
-	s.SetMatrix4("matrix", matrix);
 
+
+
+	// æ›´æ–°å¹¶æ¸²æŸ“åŒºå—
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	chunkshader.Use();
+
+	glm::mat4 model = glm::mat4(1.0);
+	chunkshader.SetMatrix4("project", projection);
+	chunkshader.SetMatrix4("view", view);
+	chunkshader.SetMatrix4("model", model);
+
+	chunkshader.SetVector3f("lightcolor", light);
+	chunkshader.SetVector3f("lightpos", lightpos);
+	chunkshader.SetFloat("shiness", shiness);
+	ambient = glm::vec3(0.45, 0.55, 0.65);
+	diffuse = glm::vec3(0.65, 0.85, 0.65);
+	specular = glm::vec3(1, 1, 1);
+	chunkshader.SetVector3f("ambient", ambient);
+	chunkshader.SetVector3f("diffuse", diffuse);
+	chunkshader.SetVector3f("specular", specular);
+	chunkshader.SetVector3f("viewpos", cameraPos);
+	//std::cout << glm::to_string(cameraPos) << std::endl;
 	Texture2DArray textureArray = ResourceManager::GetTextureArray("blocks");
 	textureArray.Bind();
 
 	for (int i = -CREATE_RADIUS; i <= CREATE_RADIUS; i++) {
 		for (int j = -CREATE_RADIUS; j <= CREATE_RADIUS; j++) {
 			Chunk* c = findChunk(cX + i, cZ + j);
-			// Èç¹ûÖ¸¶¨Î»ÖÃ²»´æÔÚÇø¿é£¬Ôò´´½¨»òÔØÈëÒ»¸öÇø¿é
+			// å¦‚æœæŒ‡å®šä½ç½®ä¸å­˜åœ¨åŒºå—ï¼Œåˆ™åˆ›å»ºæˆ–è½½å…¥ä¸€ä¸ªåŒºå—
 			if (!c) {
 				c = new Chunk(cX + i, cZ + j);
 				chunks.push_back(c);
@@ -216,48 +325,80 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 			c->render();
 		}
 	}
+	//æ¸²æŸ“æ ‘æœ¨ æœ€å¤šN_TREEæ•°é‡æ ‘æœ¨
+	sence.Use();
+	sence.SetVector3f("lightcolor", light);
+	sence.SetVector3f("lightpos", lightpos);
+	sence.SetFloat("shiness", shiness);
 
-	glEnable(GL_CULL_FACE);
+	sence.SetVector3f("viewpos", cameraPos);
+	model = glm::mat4(1.0);
+	sence.SetMatrix4("project", projection);
+
+	ambient = glm::vec3(1, 0, 0);
+	diffuse = glm::vec3(1, 0, 0);
+	specular = glm::vec3(1, 1, 1);
+	sence.SetVector3f("ambient", ambient);
+	sence.SetVector3f("diffuse", diffuse);
+	sence.SetVector3f("specular", specular);
+	sence.SetMatrix4("view", view);
+	{
+		sun.Bind();
+		model = glm::translate(model, glm::vec3(glm::vec3(lightpos.x, lightpos.y, lightpos.z)));
+		sence.SetMatrix4("model", model);
+		robotRender->DrawBall();
+	}
+
+
+	ambient = glm::vec3(0.5, 1, .2351);
+	diffuse = glm::vec3(0.5, 1, 0.251);
+	specular = glm::vec3(0, 1, 0);
+	sence.SetVector3f("ambient", ambient);
+	sence.SetVector3f("diffuse", diffuse);
+	sence.SetVector3f("specular", specular);
+	for (int i = 0; i < N_TREE; i++) {
+		model = glm::mat4(1.0);
+		//	model = glm::scale(model, glm::vec3(10, 10, 10));
+		model = glm::translate(model, glm::vec3(treepos[i].x, treepos[i].y, treepos[i].z));
+
+		//	model = glm::translate(model, glm::vec3(glm::vec3(lightpos.x, lightpos.y, lightpos.z)));
+		sence.SetMatrix4("model", model);
+
+		//	std::cout << glm::to_string(model) << std::endl;
+		treeRender->DrawTree(sence, trunk, leaves);
+	}
+
+
+
+	//	glBindTexture(GL_TEXTURE_2D, 0);
+		//glEnable(GL_CULL_FACE);
+
 
 
 	if (picked) {
+		glm::mat4 matrix = projection * view;
 		cubeRender->drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z, matrix);
 	}
 
 	glUseProgram(0);
-	
-	//äÖÈ¾Ê÷Ä¾ ×î¶àN_TREEÊıÁ¿Ê÷Ä¾
-	Texture2D trunk= ResourceManager::GetTexture("trunk");
-	Texture2D leaves = ResourceManager::GetTexture("leaves");
-	for (int i = 0; i < N_TREE; i++) {
-		Tree t(treeRender->treelist[i][0], highest(treeRender->treelist[i][0], treeRender->treelist[i][1]), treeRender->treelist[i][1]);
-		treeRender->DrawTree(t, trunk, leaves);
-	}
-	
-	//äÖÈ¾robot
-	for (int i = 0; i < N_ROBOT; i++) {
-		robotRender->robotList[i].randomMove();
-		float x = robotRender->robotList[i].x;
-		float z = robotRender->robotList[i].z;
-		robotRender->robotList[i].setLocation(x,highest(x,z),z);
-		robotRender->DrawRobot(robotRender->robotList[i]);
-	}
-	
 
-	// ÉèÖÃ¼òµ¥µÄ¹âÕÕ
-	//ÉèÖÃ¹âÕÕ
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, mAmbientMaterial);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mDiffuseMaterial);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecularMaterial);
-	glEnable(GL_COLOR_MATERIAL);
+
+
+
+	// è®¾ç½®ç®€å•çš„å…‰ç…§
+	//è®¾ç½®å…‰ç…§
+	//glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_LIGHTING);
+	//glMaterialfv(GL_FRONT, GL_AMBIENT, mAmbientMaterial);
+	//glMaterialfv(GL_FRONT, GL_DIFFUSE, mDiffuseMaterial);
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, mSpecularMaterial);
+	//glEnable(GL_COLOR_MATERIAL);
 	//light.Enable();
-	light1.Enable();
+	//light1.Enable();
 	//light2.Enable();
 	//light3.Enable();
 
-	//// ÉèÖÃ¼òµ¥µÄ¹âÕÕ
+	//// è®¾ç½®ç®€å•çš„å…‰ç…§
 	//glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_LIGHTING);
 	//GLfloat gray[] = { 0.4, 0.4, 0.4, 1.0 };
@@ -271,6 +412,6 @@ void World::render(glm::mat4 matrix, glm::vec3 cameraPos)
 		cubeRender->drawWireCube(pickedBlock.x, pickedBlock.y, pickedBlock.z);
 	}*/
 
-	glDisable(GL_LIGHTING);
-	glDisable(GL_DEPTH_TEST);
+	//	glDisable(GL_LIGHTING);
+		//glDisable(GL_DEPTH_TEST);
 }

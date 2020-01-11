@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 #include"shader.h"
 #include <string>
@@ -8,33 +8,41 @@
 #include "resource_manager.h"
 
 using namespace std;
-#define N_TREE (10)
+#define N_TREE (200)
 //#define SIZE (16)
 class Tree {
 public:
-	float position[3];//Ê÷Ä¾Î»ÖÃ
-	float leaf[2][2];//Á½²ãÊ÷Ò¶{r,h}
-	float trunk[2];//Ê÷¸É{r,h}
+	Tree();
+	float position[3];//æ ‘æœ¨ä½ç½®
+	float leaf[2][2];//ä¸¤å±‚æ ‘å¶{r,h}
+	float trunk[2];//æ ‘å¹²{r,h}
 	Tree(float x, float y, float z, float r0 = 0.8, float h0 = 0.8, float r1 = 1, float h1 = 1, float r = 0.2, float h = 1.5);
 };
 
 
 class TreeRender {
-private:	
-	Shader shader;//TODO:Ê¹ÓÃ×ÅÉ«Æ÷»æÖÆ
-	map<std::string, GLint> renderList;//ÏÔÊ¾ÁĞ±í
-	void drawLeaf(int level, Tree& tree, Texture2D& trunk, Texture2D& leaves);//»æÖÆÊ÷Ò¶
-	void drawTrunk(Tree& tree, Texture2D& trunk, Texture2D& leaves);//»æÖÆÊ÷Çû¸É
-    // Ê¹ÓÃÏÔÊ¾ÁĞ±í¼Ó¿ìäÖÈ¾ËÙ¶È
+private:
+	Shader shader;//TODO:ä½¿ç”¨ç€è‰²å™¨ç»˜åˆ¶
+	map<std::string, GLint> renderList;//æ˜¾ç¤ºåˆ—è¡¨
+	void drawLeaf(int level, Tree& tree, Texture2D& trunk, Texture2D& leaves);//ç»˜åˆ¶æ ‘å¶
+	void drawTrunk(Tree& tree, Texture2D& trunk, Texture2D& leaves);//ç»˜åˆ¶æ ‘èº¯å¹²
+	// ä½¿ç”¨æ˜¾ç¤ºåˆ—è¡¨åŠ å¿«æ¸²æŸ“é€Ÿåº¦
 	GLint createList(Tree& tree, Texture2D& trunk, Texture2D& leaves);
-	
-public:
-	int treelist[N_TREE][2]; //Ê÷µÄÎ»ÖÃ £¨x,z£©
-	TreeRender();
-	TreeRender(Shader& shader);//TODO ÓÃ×ÅÉ«Æ÷»æÖÆÊ÷Ä¾
-	
-	void initRenderData();//TODO ÓÃ×ÅÉ«Æ÷µÄÊ±ºò£¬ÓÃÓÚÅäÖÃ VAO Óë VBO µÈ
-	void DrawTree(Tree& tree, Texture2D& trunk, Texture2D& leaves);// »æÖÆÊ÷Ä¾
-    
-};
 
+public:
+	int treelist[N_TREE][2]; //æ ‘çš„ä½ç½® ï¼ˆx,zï¼‰
+	TreeRender();
+
+	//TODO ç”¨ç€è‰²å™¨ç»˜åˆ¶æ ‘æœ¨
+	void DrawTree(Shader& shader, Texture2D& trunk, Texture2D& leaves);
+	vector <glm::vec3> points;
+	vector <glm::vec2> texs;
+	vector <glm::vec3> normals;
+	GLuint vaotrunk, vaoleaf;
+	GLuint trunkcount, leafcount;
+	void  initRenderDataLeaf(Tree& tree);
+	void  initRenderDataTrunck(Tree& tree);
+	void initRenderData(Tree& tree);//TODO ç”¨ç€è‰²å™¨çš„æ—¶å€™ï¼Œç”¨äºé…ç½® VAO ä¸ VBO ç­‰
+	void DrawTree(Tree& tree, Texture2D& trunk, Texture2D& leaves);// ç»˜åˆ¶æ ‘æœ¨
+
+};

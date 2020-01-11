@@ -1,12 +1,14 @@
-#pragma once
-#define N_ROBOT 4
+ï»¿#pragma once
+#define N_ROBOT 10
 #include "GL/glew.h"
 #include "GL/glut.h"
 #include <random>
 #include <map>
 #include <iostream>
 #include <string>
-
+#include "shader.h"
+#include "Sphere.h"
+#include "texture.h"
 
 class Robot {
 public:
@@ -14,16 +16,16 @@ public:
 	float speed;
 
 	float x, y, z;
-	int random_t;//ÏòÕâÒ»·½Ïò×î¶à×ßµÄ²½Êı
-	unsigned int count;//µ±Ç°ÏòÄ³Ò»·½Ïò×ßµÄ²½Êı
-	float vangle;    // ËÙ¶ÈÆ«½Ç
+	int random_t;//å‘è¿™ä¸€æ–¹å‘æœ€å¤šèµ°çš„æ­¥æ•°
+	unsigned int count;//å½“å‰å‘æŸä¸€æ–¹å‘èµ°çš„æ­¥æ•°
+	float vangle;    // é€Ÿåº¦åè§’
 	bool move;
 
-	// ¹¹Ôìº¯Êı
+	// æ„é€ å‡½æ•°
 	Robot();
 	Robot(int x, int y, int z, float s = 1);
 
-	// ÉèÖÃ×ø±ê
+	// è®¾ç½®åæ ‡
 	void setLocation(float x, float y, float z);
 	void randomMove();
 
@@ -35,8 +37,14 @@ class RobotRender {
 public:
 	Robot robotList[N_ROBOT];
 	GLint lid;
+	Sphere* sphere;
+	GLuint vao;
+	GLuint vbo, ebo;
+	GLuint count;
 	GLint createList();
-	void DrawRobot(Robot& robot);
+	void initBuffer();
+	void DrawRobot(Shader s, Robot& robot);
+	void DrawBall();
+	void DrawRobot(Shader s, Robot& robot, Texture2D& tex0, Texture2D& tex1);
 	RobotRender();
 };
-

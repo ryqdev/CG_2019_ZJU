@@ -1,4 +1,4 @@
-#include "chunk.h"
+ï»¿#include "chunk.h"
 
 Chunk::Chunk(int x, int z)
 {
@@ -14,20 +14,20 @@ Chunk::~Chunk()
 		glDeleteBuffers(1, &vbo);
 }
 
-// Éú³É»òÔØÈëÇø¿é
+// ç”Ÿæˆæˆ–è½½å…¥åŒºå—
 void Chunk::genChunk()
 {
 	PerlinNoise noise;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
 		for (int z = 0; z < CHUNK_SIZE; z++) {
-			// ·½¿éµÄÊµ¼ÊÎ»ÖÃ
+			// æ–¹å—çš„å®é™…ä½ç½®
 			int xi = X * CHUNK_SIZE + x;
 			int zi = Z * CHUNK_SIZE + z;
 
-			// ¸ù¾İÊµ¼ÊÎ»ÖÃ¼ÆËã×î´ó¸ß¶È
-			double f = noise.octaveNoise(xi*0.01, zi*0.01, 4, 0.5);
-			double g = noise.octaveNoise(-xi*0.01, -zi*0.01, 2, 0.9);
+			// æ ¹æ®å®é™…ä½ç½®è®¡ç®—æœ€å¤§é«˜åº¦
+			double f = noise.octaveNoise(xi * 0.01, zi * 0.01, 4, 0.5);
+			double g = noise.octaveNoise(-xi * 0.01, -zi * 0.01, 2, 0.9);
 			int mh = g * 32 + 16;
 			int h = f * mh;
 			int t = 12;
@@ -44,7 +44,7 @@ void Chunk::genChunk()
 	loaded = true;
 }
 
-// Éú³É²¢°ó¶¨buffer
+// ç”Ÿæˆå¹¶ç»‘å®šbuffer
 void Chunk::genBuffer()
 {
 	if (!loaded)
@@ -52,11 +52,11 @@ void Chunk::genBuffer()
 
 	std::vector<float> data;
 
-	// ±éÀúËùÓĞ·½¿é
+	// éå†æ‰€æœ‰æ–¹å—
 	for (auto it = blocks.begin(); it != blocks.end(); it++) {
 		if (it->second == AIR) continue;
 
-		// µÃµ½×ø±ê
+		// å¾—åˆ°åæ ‡
 		int key = it->first;
 		int z = key % CHUNK_SIZE;
 		key /= CHUNK_SIZE;
@@ -72,22 +72,22 @@ void Chunk::genBuffer()
 		if (getBlock(x, y, z + 1) == AIR) front = true;
 		if (getBlock(x, y, z - 1) == AIR) back = true;
 
-		genCubeBuffer(data, x + X*CHUNK_SIZE, y, z + Z*CHUNK_SIZE, it->second,
+		genCubeBuffer(data, x + X * CHUNK_SIZE, y, z + Z * CHUNK_SIZE, it->second,
 			left, right, top, bottom, front, back);
 	}
 
-	// ¶¥µãÊı
+	// é¡¶ç‚¹æ•°
 	vertsNum = 0;
 	if (data.size() != 0)
 		vertsNum = data.size() / 9;
 
-	// É¾³ıÒÑÓĞµÄvaoºÍvbo
+	// åˆ é™¤å·²æœ‰çš„vaoå’Œvbo
 	if (vao != 0)
 		glDeleteVertexArrays(1, &vao);
 	if (vbo != 0)
 		glDeleteBuffers(1, &vbo);
 
-	// Éú³É²¢°ó¶¨vao£¬vbo
+	// ç”Ÿæˆå¹¶ç»‘å®švaoï¼Œvbo
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
@@ -97,13 +97,13 @@ void Chunk::genBuffer()
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void *)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(6 * sizeof(float)));
 
 	dirty = false;
 }
@@ -118,15 +118,16 @@ void Chunk::render()
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, vertsNum);
+	//std::cout << vertsNum << std::endl;
 }
 
-// »ñÈ¡Ö¸¶¨Î»ÖÃµÄ×î´ó¸ß¶È
+// è·å–æŒ‡å®šä½ç½®çš„æœ€å¤§é«˜åº¦
 int Chunk::highest(int x, int z)
 {
 	int highest = 0;
 
 	for (auto it = blocks.begin(); it != blocks.end(); it++) {
-		// µÃµ½×ø±ê
+		// å¾—åˆ°åæ ‡
 		int key = it->first;
 		int iz = key % CHUNK_SIZE;
 		key /= CHUNK_SIZE;
@@ -134,17 +135,17 @@ int Chunk::highest(int x, int z)
 		int iy = key / CHUNK_SIZE;
 
 		if (ix == x && iz == z) {
-			highest = highest>iy?highest:iy;
+			highest = highest > iy ? highest : iy;
 		}
 	}
 
 	return highest;
 }
 
-// »ñÈ¡Ö¸¶¨Î»ÖÃµÄ·½¿é
+// è·å–æŒ‡å®šä½ç½®çš„æ–¹å—
 BlockType Chunk::getBlock(int x, int y, int z)
 {
-	// ÅĞ¶ÏÊÇ·ñÔ½½ç
+	// åˆ¤æ–­æ˜¯å¦è¶Šç•Œ
 	if (x > CHUNK_SIZE - 1 || y > CHUNK_HEIGHT - 1 || z > CHUNK_SIZE - 1)
 		return AIR;
 	if (x < 0 || y < 0 || z < 0)
@@ -158,10 +159,10 @@ BlockType Chunk::getBlock(int x, int y, int z)
 		return AIR;
 }
 
-// ÔÚÖ¸¶¨Î»ÖÃ·ÅÖÃ·½¿é
+// åœ¨æŒ‡å®šä½ç½®æ”¾ç½®æ–¹å—
 void Chunk::putBlock(int x, int y, int z, BlockType w)
 {
-	// ÅĞ¶ÏÊÇ·ñÔ½½ç
+	// åˆ¤æ–­æ˜¯å¦è¶Šç•Œ
 	if (x > CHUNK_SIZE - 1 || y > CHUNK_HEIGHT - 1 || z > CHUNK_SIZE - 1)
 		return;
 	if (x < 0 || y < 0 || z < 0)
@@ -177,10 +178,10 @@ void Chunk::putBlock(int x, int y, int z, BlockType w)
 	dirty = true;
 }
 
-// ÒÆ³ıÖ¸¶¨Î»ÖÃµÄ·½¿é
+// ç§»é™¤æŒ‡å®šä½ç½®çš„æ–¹å—
 void Chunk::removeBlock(int x, int y, int z)
 {
-	// ÅĞ¶ÏÊÇ·ñÔ½½ç
+	// åˆ¤æ–­æ˜¯å¦è¶Šç•Œ
 	if (x > CHUNK_SIZE - 1 || y > CHUNK_HEIGHT - 1 || z > CHUNK_SIZE - 1)
 		return;
 	if (x < 0 || y < 0 || z < 0)
@@ -204,7 +205,7 @@ bool Chunk::isDirty() const
 	return dirty;
 }
 
-// xyzÎªÊµ¼ÊµÄxyz
+// xyzä¸ºå®é™…çš„xyz
 void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockType w, bool left, bool right, bool top, bool bottom, bool front, bool back)
 {
 	static const float position[6][6][5] = {
@@ -268,26 +269,26 @@ void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockTy
 
 	bool faces[] = { left, right, top, bottom, front, back };
 
-	// ±éÀú·½¿éµÄ6¸öÃæ
+	// éå†æ–¹å—çš„6ä¸ªé¢
 	for (int i = 0; i < 6; i++) {
 		if (!faces[i])
 			continue;
 
-		// ±éÀúÃæÉÏµÄ6¸ö¶¥µã
+		// éå†é¢ä¸Šçš„6ä¸ªé¡¶ç‚¹
 		for (int v = 0; v < 6; v++) {
 			// xyz
 			data.push_back(x + position[i][v][0]);
 			data.push_back(y + position[i][v][1]);
 			data.push_back(z + position[i][v][2]);
+			// æ³•çº¿
+			data.push_back(normals[i][0]);
+			data.push_back(normals[i][1]);
+			data.push_back(normals[i][2]);
 			// uv
 			data.push_back(position[i][v][3]);
 			data.push_back(position[i][v][4]);
 			// w
 			data.push_back(ETextureType::blockTextures[w][i]);
-			// ·¨Ïß
-			data.push_back(normals[i][0]);
-			data.push_back(normals[i][1]);
-			data.push_back(normals[i][2]);
 		}
 	}
 }

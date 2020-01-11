@@ -19,6 +19,7 @@
     <ClCompile Include="chunk\chunkManager.cpp" />
     <ClCompile Include="cubeRender.cpp" />
     <ClCompile Include="file.cpp" />
+    <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="chunk\chunkManager.h" />
     <ClInclude Include="cubeRender.h" />
     <ClInclude Include="file.h" />
+    <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blocks">

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "GL/glew.h"
 #include "cubeRender.h"
@@ -19,52 +19,58 @@ private:
 	CubeRender* cubeRender;
 	TreeRender* treeRender;
 	RobotRender* robotRender;
-
+	Tree  tree[N_TREE];
 	bool picked = false;
 	glm::vec3 pickedBlock;
 
-	SkyBox skyBox;	// Ìì¿ÕºĞ¶ÔÏó
+	SkyBox skyBox;	// å¤©ç©ºç›’å¯¹è±¡
 	std::vector<Chunk*> chunks;
+	Shader sence, chunkshader;
 
+	Texture2D trunk;
+	Texture2D leaves;
+
+	Texture2D earth, sun;
+	Texture2D moon;
 	ChunkManager chunkManager;
 
 	Chunk* findChunk(int x, int z);
 
-	void drawWireCube(int x, int y, int z, glm::mat4 matrix);// »æÖÆÏß¿ò
+	void drawWireCube(int x, int y, int z, glm::mat4 matrix);// ç»˜åˆ¶çº¿æ¡†
 
-	//ÊÀ½çÎïÌå²ÄÖÊ
+	//ä¸–ç•Œç‰©ä½“æè´¨
 	float mAmbientMaterial[4], mDiffuseMaterial[4], mSpecularMaterial[4];
 
 public:
 	World();
 	~World();
 
-	ChunkManager &getChunkManager();
+	ChunkManager& getChunkManager();
 
-	// ĞŞ¸ÄĞèÒª»æÖÆµÄÏß¿òÎ»ÖÃ
+	// ä¿®æ”¹éœ€è¦ç»˜åˆ¶çš„çº¿æ¡†ä½ç½®
 	void pick_block(int x, int y, int z);
 	void unpick_block();
 
 	BlockType get_block(int x, int y, int z);
 
-	// ·ÅÒ»¸ö Block ÔÚÖ¸¶¨×ø±êÖĞ
+	// æ”¾ä¸€ä¸ª Block åœ¨æŒ‡å®šåæ ‡ä¸­
 	void put_block(int x, int y, int z, BlockType type);
 
 	void remove_block(int x, int y, int z);
 
 	int highest(int x, int z);
 
-	// ´ÓÎÄ¼şÖĞ¼ÓÔØÊÀ½çÊı¾İ, ´´½¨ÏàÓ¦µÄ·½¿é¶ÔÏó
+	// ä»æ–‡ä»¶ä¸­åŠ è½½ä¸–ç•Œæ•°æ®, åˆ›å»ºç›¸åº”çš„æ–¹å—å¯¹è±¡
 	void Load();
 
-	// ³õÊ¼»¯ÊÀ½çÉú³É£¬×¼±¸×ÅÉ«Æ÷£¬ÎÆÀíµÈ
+	// åˆå§‹åŒ–ä¸–ç•Œç”Ÿæˆï¼Œå‡†å¤‡ç€è‰²å™¨ï¼Œçº¹ç†ç­‰
 	void init();
 
-	// äÖÈ¾Õû¸öÊÀ½ç
+	// æ¸²æŸ“æ•´ä¸ªä¸–ç•Œ
 	//void render(Camera& camera);
-	void render(glm::mat4 matrix, glm::vec3 cameraPos);
-
-	//ÉèÖÃÊÀ½çÎïÌå·´Éä²ÄÖÊ
+//	void render(glm::mat4 matrix, glm::vec3 cameraPos);
+	void render(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos);
+	//è®¾ç½®ä¸–ç•Œç‰©ä½“åå°„æè´¨
 	void SetAmbientMaterial(float r, float g, float b, float a);
 	void SetDiffuseMaterial(float r, float g, float b, float a);
 	void SetSpecularMaterial(float r, float g, float b, float a);

@@ -1,4 +1,4 @@
-#include "game.h"
+ï»¿#include "game.h"
 #include "resource_manager.h"
 
 Game::Game(GLuint width, GLuint height)
@@ -38,7 +38,7 @@ void Game::nextBlcokType()
 
 void Game::Init()
 {
-	// ÎÆÀíÊı×é
+	// çº¹ç†æ•°ç»„
 	vector<const GLchar*> files;
 	files.push_back("textures/grass_block_up.png");
 	files.push_back("textures/grass_block_side.png");
@@ -46,27 +46,33 @@ void Game::Init()
 	files.push_back("textures/gold_ore.png");
 	ResourceManager::LoadTextureArray(files, false, "blocks");
 
-	//×°ÔØÊ÷Ä¾ÎÆÀí
+	//è£…è½½æ ‘æœ¨çº¹ç†
 	ResourceManager::LoadTexture("textures/tree.png", false, "trunk");
 	ResourceManager::LoadTexture("textures/leaf.png", false, "leaves");
+	ResourceManager::LoadTexture("textures/moon1024.bmp", false, "moon");
+	ResourceManager::LoadTexture("textures/earth2048.bmp", false, "earth");
+	ResourceManager::LoadTexture("textures/sunmap.bmp", false, "sun");
 
 	ResourceManager::LoadShader("shaders/sky_vertex.glsl", "shaders/sky_fragment.glsl", nullptr, "shader_skybox");
-	ResourceManager::LoadShader("shaders/chunk_vertex.glsl", "shaders/chunk_fragment.glsl", 
+	ResourceManager::LoadShader("shaders/chunk_vertex.glsl", "shaders/chunk_fragment.glsl",
 		nullptr, "shader_chunk");
 	ResourceManager::LoadShader("shaders/line_vertex.glsl", "shaders/line_fragment.glsl",
 		nullptr, "shader_line");
+	ResourceManager::LoadShader("shaders/robot_vertex.glsl", "shaders/robot_fragment.glsl", nullptr, "shader_robot");
+	ResourceManager::LoadShader("shaders/sence_vertex.glsl", "shaders/sence_fragment.glsl", nullptr, "shader_sence");
 
-	// ĞÂ½¨Ò»¸ö world ¶ÔÏó
+
+	// æ–°å»ºä¸€ä¸ª world å¯¹è±¡
 	this->world = new World();
-	// ÔØÈëÊÀ½ç×ÊÔ´
+	// è½½å…¥ä¸–ç•Œèµ„æº
 	this->world->Load();
-	// ³õÊ¼»¯ÊÀ½ç
+	// åˆå§‹åŒ–ä¸–ç•Œ
 	this->world->init();
 
-	// ´´½¨Ò»¸öÕÕÏà»ú
-	this->camera = new Camera(glm::vec3(3.0f, this->world->highest(3, 3)+2.5f, 3.0f));
+	// åˆ›å»ºä¸€ä¸ªç…§ç›¸æœº
+	this->camera = new Camera(glm::vec3(3.0f, this->world->highest(3, 3) + 2.5f, 3.0f));
 
-	// ´´½¨Êó±êÊ°È¡Æ÷
+	// åˆ›å»ºé¼ æ ‡æ‹¾å–å™¨
 	// this->mousePicker = new MousePicker(this->camera, glm::make_mat4(projectionMatrix));
 	this->mousePicker = new MousePicker(this->camera, glm::perspective(65.0f, (float)Width / Height, 0.125f, 100.0f));
 
@@ -84,29 +90,29 @@ void Game::Render()
 	// clear buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
-    
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(camera->getZooom(),(float)Width/Height,0.125f,100.0f);
+	gluPerspective(camera->getZooom(), (float)Width / Height, 0.125f, 100.0f);
 
-	//ÉèÖÃÄ£ĞÍ¾ØÕó
+	//è®¾ç½®æ¨¡å‹çŸ©é˜µ
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	//ÉèÖÃÊÓµã
-	camera->setLookAt();
+	//è®¾ç½®è§†ç‚¹
+	//camera->setLookAt();
 
 	glm::mat4 view = camera->GetViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)Width / Height, 0.125f, 100.0f);
-	glm::mat4 matrix = projection * view;
+	//	glm::mat4 matrix = projection * view;
 
-	// äÖÈ¾ÊÀ½ç
-	world->render(matrix, camera->Position);
-
-	// ²âÊÔÊó±êÉäÏß
+		// æ¸²æŸ“ä¸–ç•Œ
+		//world->render(matrix, camera->Position);
+	world->render(projection, view, camera->Position);
+	// æµ‹è¯•é¼ æ ‡å°„çº¿
 	this->mousePicker->render_ray();
 
-	// äÖÈ¾ÆÁÄ»ÖĞĞÄµÄÊ®×Ö
+	// æ¸²æŸ“å±å¹•ä¸­å¿ƒçš„åå­—
 	this->render_cross();
 
 }
@@ -115,8 +121,8 @@ void Game::Update(GLfloat dt)
 {
 }
 
-// ÏÈ·ÅÕâ¶ù, ±£´æÉÏÒ»´ÎÑ¡ÖĞµÄ·½¿éÎ»ÖÃ£¬ÎªÁËÄÜ¹»²»Ñ¡ÖĞµÄÊ±ºòÏû³ıÏß¿ò
-static int block_last_x = 0;	
+// å…ˆæ”¾è¿™å„¿, ä¿å­˜ä¸Šä¸€æ¬¡é€‰ä¸­çš„æ–¹å—ä½ç½®ï¼Œä¸ºäº†èƒ½å¤Ÿä¸é€‰ä¸­çš„æ—¶å€™æ¶ˆé™¤çº¿æ¡†
+static int block_last_x = 0;
 static int block_last_y = 0;
 static int block_last_z = 0;
 
@@ -129,8 +135,8 @@ void Game::MouseMoveCallback(int xpos, int ypos)
 
 
 	// ---------------------------------------------------------
-	// TODO: ²âÊÔÉäÏßÊ°È¡
-	int distance = 8;			// ÄÜ¹»µÃ×Å¶àÔ¶
+	// TODO: æµ‹è¯•å°„çº¿æ‹¾å–
+	int distance = 8;			// èƒ½å¤Ÿå¾—ç€å¤šè¿œ
 
 	glm::vec3 ray = this->mousePicker->getCurrentRay();
 	int x, y, z;
@@ -140,7 +146,7 @@ void Game::MouseMoveCallback(int xpos, int ypos)
 		z = roundf(ray.z * u + camera->Position.z);
 		if (world->get_block(x, y, z) != AIR) {
 			if (block_last_x == x && block_last_y == y && block_last_z == z) {
-				// cout << "ÒÑ¾­Ñ¡ÖĞÁË"<< endl;
+				// cout << "å·²ç»é€‰ä¸­äº†"<< endl;
 			}
 			else {
 				world->unpick_block();
@@ -159,32 +165,32 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
-			// ÏÂÃæÊÇ·ÅÖÃ·½¿é¹¦ÄÜ
-			// ÓĞÁËµ±Ç°Ñ¡ÖĞµÄ·½¿é£¬ÅĞ¶ÏÉäÏßÏÈÓë·½¿éµÄÄÄÒ»¸öÃæÏà½»
+			// ä¸‹é¢æ˜¯æ”¾ç½®æ–¹å—åŠŸèƒ½
+			// æœ‰äº†å½“å‰é€‰ä¸­çš„æ–¹å—ï¼Œåˆ¤æ–­å°„çº¿å…ˆä¸æ–¹å—çš„å“ªä¸€ä¸ªé¢ç›¸äº¤
 			// cout << block_last_x << " " << block_last_y << " " << block_last_z << endl;
 			glm::vec3 ray = this->mousePicker->getCurrentRay();
 			glm::vec3 pos = glm::vec3(block_last_x, block_last_y, block_last_z);
-			// »ñÈ¡Ïà½»µÄÃæ
+			// è·å–ç›¸äº¤çš„é¢
 			glm::vec3 p = this->mousePicker->Intersect(ray, camera->Position, block_last_x, block_last_y, block_last_z);
 			if (p == glm::vec3(0, 0, 0)) {
 				return;
 			}
 			pos = pos + p;
 
-			if (world->get_block(pos.x, pos.y, pos.z) == AIR) {	// µ±Ç°Î»ÖÃÃ»ÓĞ·½¿é
+			if (world->get_block(pos.x, pos.y, pos.z) == AIR) {	// å½“å‰ä½ç½®æ²¡æœ‰æ–¹å—
 				if (glm::abs(camera->Position.x - pos.x) < 0.6
 					&& glm::abs(camera->Position.z - pos.z) < 0.6
 					&& pos.y + 0.3 > camera->Position.y - 1.3
-					&& pos.y - 0.3 < camera->Position.y + 0.3) {	// Òª·ÅµÄ·½¿é²»ÄÜÓëÈËÅö×²
+					&& pos.y - 0.3 < camera->Position.y + 0.3) {	// è¦æ”¾çš„æ–¹å—ä¸èƒ½ä¸äººç¢°æ’
 					return;
 				}
-				// cout << "·ÅÔÚÁË:" << pos.x << " " << pos.y << " " << pos.z << endl;
+				// cout << "æ”¾åœ¨äº†:" << pos.x << " " << pos.y << " " << pos.z << endl;
 				world->put_block(pos.x, pos.y, pos.z, currentType);
 				file.WriteCube(pos.x, pos.y, pos.z, currentType);
 			}
 		}
 	}
-	else if (button == GLUT_RIGHT_BUTTON) {		// Ïû³ı·½¿é
+	else if (button == GLUT_RIGHT_BUTTON) {		// æ¶ˆé™¤æ–¹å—
 		if (state == GLUT_DOWN) {
 			if (world->get_block(block_last_x, block_last_y, block_last_z) != AIR) {
 				world->remove_block(block_last_x, block_last_y, block_last_z);
@@ -199,20 +205,20 @@ void Game::Reshape(int w, int h)
 {
 	Width = w;
 	Height = h;
-	camera->setProjectionMatrix(glm::perspective(glm::radians(45.0f), (float)w/h, 0.125f, 100.0f));
+	camera->setProjectionMatrix(glm::perspective(glm::radians(45.0f), (float)w / h, 0.125f, 100.0f));
 }
 
 
 void Game::render_cross()
 {
 	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);  // Ñ¡ÔñÍ¶Ó°¾ØÕó
-	glPushMatrix();               // ±£´æÔ­¾ØÕó
-	glLoadIdentity();             // ×°Èëµ¥Î»¾ØÕó
-	glOrtho(0, 100, 0, 100, -1, 1);    // Î»ÖÃÕıÍ¶Ó°
-	glMatrixMode(GL_MODELVIEW);   // Ñ¡ÔñModelview¾ØÕó
-	glPushMatrix();               // ±£´æÔ­¾ØÕó
-	glLoadIdentity();             // ×°Èëµ¥Î»¾ØÕó
+	glMatrixMode(GL_PROJECTION);  // é€‰æ‹©æŠ•å½±çŸ©é˜µ
+	glPushMatrix();               // ä¿å­˜åŸçŸ©é˜µ
+	glLoadIdentity();             // è£…å…¥å•ä½çŸ©é˜µ
+	glOrtho(0, 100, 0, 100, -1, 1);    // ä½ç½®æ­£æŠ•å½±
+	glMatrixMode(GL_MODELVIEW);   // é€‰æ‹©ModelviewçŸ©é˜µ
+	glPushMatrix();               // ä¿å­˜åŸçŸ©é˜µ
+	glLoadIdentity();             // è£…å…¥å•ä½çŸ©é˜µ
 	glColor3f(0.0, 0.0, 0.0);
 	glLineWidth(2.0f);
 	glBegin(GL_LINES);
@@ -223,9 +229,9 @@ void Game::render_cross()
 	glVertex2i(50, 51);
 	glEnd();
 
-	glMatrixMode(GL_PROJECTION);  // Ñ¡ÔñÍ¶Ó°¾ØÕó
-	glPopMatrix();                // ÖØÖÃÎªÔ­±£´æ¾ØÕó
-	glMatrixMode(GL_MODELVIEW);   // Ñ¡ÔñModelview¾ØÕó
-	glPopMatrix();                // ÖØÖÃÎªÔ­±£´æ¾ØÕó
+	glMatrixMode(GL_PROJECTION);  // é€‰æ‹©æŠ•å½±çŸ©é˜µ
+	glPopMatrix();                // é‡ç½®ä¸ºåŸä¿å­˜çŸ©é˜µ
+	glMatrixMode(GL_MODELVIEW);   // é€‰æ‹©ModelviewçŸ©é˜µ
+	glPopMatrix();                // é‡ç½®ä¸ºåŸä¿å­˜çŸ©é˜µ
 	glEnable(GL_DEPTH_TEST);
 }
