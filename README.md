@@ -82,6 +82,13 @@ For the sake of the correctness in README, Chinese will be used in the following
 * 若在chunkManager类中定义chunks，更新游戏时无法渲染方块，暂时放回world类中定义chunks
 * `file` 类:控制文件的创建输入输出
 
+## 2020年1月11日更新
+
+* 移除无用的ChunkManager类，并对chunk的绘制进行相应的调整
+* 使用128x的纹理及法线贴图、高光贴图渲染方块，并对chunk的着色器进行相应的修改
+* 为树木添加3个方块大小的碰撞体积
+* 解决选择线框无法显示的bug，现在所有可修改的方块均可以显示线框
+
 ## To-Do list
 * 基础要求
 - [x] 建模:基于OpenGL/WebGL，具有基本体素(立方体、球、圆柱、圆锥、多 面棱柱、多面棱台)的建模表达能力
