@@ -94,6 +94,8 @@ For the sake of the correctness in README, Chinese will be used in the following
 * 完善存储功能，开始游戏前在控制台输入存档名，若已有该存档则打开旧存档，无存档则新建
 * 删除I键功能，U键在游戏中打开新存档或旧存档
 * 自动创建save、screenshot文件夹
+* 在绘制树时取消面剔除，以解决树绘制不正常的问题
+* 优化代码，提高fps
 
 ## To-Do list
 * 基础要求
