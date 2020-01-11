@@ -3,9 +3,11 @@
 #include <GL/glew.h>
 #include <unordered_map>
 #include <iostream>
-
+#include <vector>
+#include <glm/glm.hpp>
 #include "../blockType.h"
 #include "perlinNoise.h"
+#include "../tree.h"
 
 const int CHUNK_SIZE = 16;
 const int CHUNK_HEIGHT = 128;
@@ -13,34 +15,36 @@ const int CHUNK_HEIGHT = 128;
 class Chunk
 {
 public:
-	int X, Z;	// Çø¿éÎ»ÖÃ
+	int X, Z;	// åŒºå—ä½ç½®
 	GLuint vao = 0;
 	int vertsNum = 0;
 
 	Chunk(int x, int z) ;
 	~Chunk();
 
-	void genChunk();	// Éú³É»òÔØÈëÇø¿é
-	void genBuffer();	// Éú³É²¢°ó¶¨buffer
+	void genChunk();	// ç”Ÿæˆæˆ–è½½å…¥åŒºå—
+	void genBuffer();	// ç”Ÿæˆå¹¶ç»‘å®šbuffer
 	void render();
 
-	int highest(int x, int z);	// »ñÈ¡Ö¸¶¨Î»ÖÃµÄ×î´ó¸ß¶È
+	int highest(int x, int z);	// è·å–æŒ‡å®šä½ç½®çš„æœ€å¤§é«˜åº¦
 
-	BlockType getBlock(int x, int y, int z);	// »ñÈ¡Ö¸¶¨Î»ÖÃ·½¿é
-	void putBlock(int x, int y, int z, BlockType w);	// ÔÚÖ¸¶¨Î»ÖÃ·ÅÖÃ·½¿é
-	void removeBlock(int x, int y, int z);	// ÒÆ³ıÖ¸¶¨Î»ÖÃµÄ·½¿é
+	BlockType getBlock(int x, int y, int z);	// è·å–æŒ‡å®šä½ç½®æ–¹å—
+	void putBlock(int x, int y, int z, BlockType w);	// åœ¨æŒ‡å®šä½ç½®æ”¾ç½®æ–¹å—
+	void removeBlock(int x, int y, int z);	// ç§»é™¤æŒ‡å®šä½ç½®çš„æ–¹å—
 
 	bool isLoaded() const;
 	bool isDirty() const;
 
 private:
-	bool loaded = false;	// ÓÃÀ´ÅĞ¶Ï·½¿éÊÇ·ñÒÑÉú³É»òÔØÈë
-	bool dirty = true;		// ÓÃÀ´ÅĞ¶ÏbufferÊÇ·ñÒÑÉú³É²¢°ó¶¨
+	bool loaded = false;	// ç”¨æ¥åˆ¤æ–­æ–¹å—æ˜¯å¦å·²ç”Ÿæˆæˆ–è½½å…¥
+	bool dirty = true;		// ç”¨æ¥åˆ¤æ–­bufferæ˜¯å¦å·²ç”Ÿæˆå¹¶ç»‘å®š
 
 	GLuint vbo = 0;
 	std::unordered_map<int, BlockType> blocks;
 
-	// xyzÎªÊµ¼ÊµÄxyz
+	// åˆ¤æ–­æ˜¯å¦ä¸ºå®ä½“æ–¹å—
+	bool isBlock(BlockType type);
+	// xyzä¸ºå®é™…çš„xyz
 	void genCubeBuffer(std::vector<float> &data, int x, int y, int z, BlockType w, 
 		bool left, bool right, bool top, bool bottom, bool front, bool back);
 };

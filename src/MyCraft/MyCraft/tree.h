@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <vector>
 #include"shader.h"
 #include <string>
@@ -8,7 +8,7 @@
 #include "resource_manager.h"
 
 using namespace std;
-#define N_TREE (200)
+//#define N_TREE (200)
 //#define SIZE (16)
 class Tree {
 public:
@@ -30,7 +30,7 @@ private:
 	GLint createList(Tree& tree, Texture2D& trunk, Texture2D& leaves);
 
 public:
-	int treelist[N_TREE][2]; //树的位置 （x,z）
+	//int treelist[N_TREE][2]; //树的位置 （x,z）
 	TreeRender();
 
 	//TODO 用着色器绘制树木

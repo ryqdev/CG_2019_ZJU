@@ -1,12 +1,13 @@
 #pragma once
 
-static int BlockTypeNum = 3; // ·½¿éµÄÖÖÀàÊı
+static int BlockTypeNum = 3; // æ–¹å—çš„ç§ç±»æ•°
 
 enum BlockType {
 	GRASS,
 	ICE,
 	GOLD,
-	AIR = 255	// ·Åµ½×îºó
+	TREE = 254,	// æ”¾åˆ°åé¢ï¼Œåªèµ·åˆ°æ ‡å¿—çš„ä½œç”¨
+	AIR = 255	// æ”¾åˆ°æœ€å
 };
 
 namespace ETextureType {
@@ -17,7 +18,7 @@ namespace ETextureType {
 		GOLD_ORE
 	};
 
-	// 0~6·Ö±ğÊÇleft, right, top, bottom, front, back
+	// 0~6åˆ†åˆ«æ˜¯left, right, top, bottom, front, back
 	const int blockTextures[][6] = {
 		{GRASS_SIDE, GRASS_SIDE, GRASS_TOP, GRASS_TOP, GRASS_SIDE, GRASS_SIDE},	// GRASS
 	{ICE, ICE, ICE, ICE, ICE, ICE},	// ICE

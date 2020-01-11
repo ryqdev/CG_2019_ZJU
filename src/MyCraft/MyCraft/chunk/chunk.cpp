@@ -1,4 +1,4 @@
-﻿#include "chunk.h"
+#include "chunk.h"
 
 Chunk::Chunk(int x, int z)
 {
@@ -35,12 +35,11 @@ void Chunk::genChunk()
 				h = t;
 			}
 
-			for (int y = 0; y < h; y++) {
+			for (int y = 0; y <= h; y++) {
 				int key = (y * CHUNK_SIZE + x) * CHUNK_SIZE + z;
 				blocks.insert(std::make_pair(key, GRASS));
 			}
 		}
-
 	loaded = true;
 }
 
@@ -65,21 +64,23 @@ void Chunk::genBuffer()
 
 		bool left, right, top, bottom, front, back;
 		left = right = top = bottom = front = back = false;
-		if (getBlock(x - 1, y, z) == AIR) left = true;
-		if (getBlock(x + 1, y, z) == AIR) right = true;
-		if (getBlock(x, y + 1, z) == AIR) top = true;
-		if (getBlock(x, y - 1, z) == AIR) bottom = true;
-		if (getBlock(x, y, z + 1) == AIR) front = true;
-		if (getBlock(x, y, z - 1) == AIR) back = true;
+		if (!isBlock(getBlock(x - 1, y, z))) left = true;
+		if (!isBlock(getBlock(x + 1, y, z))) right = true;
+		if (!isBlock(getBlock(x, y + 1, z))) top = true;
+		if (!isBlock(getBlock(x, y - 1, z))) bottom = true;
+		if (!isBlock(getBlock(x, y, z + 1))) front = true;
+		if (!isBlock(getBlock(x, y, z - 1))) back = true;
 
-		genCubeBuffer(data, x + X * CHUNK_SIZE, y, z + Z * CHUNK_SIZE, it->second,
-			left, right, top, bottom, front, back);
+		if (isBlock(it->second)) {
+			genCubeBuffer(data, x + X * CHUNK_SIZE, y, z + Z * CHUNK_SIZE, it->second,
+				left, right, top, bottom, front, back);
+		}
 	}
 
 	// 顶点数
 	vertsNum = 0;
 	if (data.size() != 0)
-		vertsNum = data.size() / 9;
+		vertsNum = data.size() / 12;
 
 	// 删除已有的vao和vbo
 	if (vao != 0)
@@ -97,13 +98,16 @@ void Chunk::genBuffer()
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 12, (void*)0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 12, (void*)(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 12, (void*)(6 * sizeof(float)));
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 12, (void*)(9 * sizeof(float)));
 
 	dirty = false;
 }
@@ -118,7 +122,6 @@ void Chunk::render()
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, vertsNum);
-	//std::cout << vertsNum << std::endl;
 }
 
 // 获取指定位置的最大高度
@@ -205,6 +208,13 @@ bool Chunk::isDirty() const
 	return dirty;
 }
 
+
+// 判断是否为实体方块
+bool Chunk::isBlock(BlockType type) 
+{
+	return type != AIR && type != TREE;
+}
+
 // xyz为实际的xyz
 void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockType w, bool left, bool right, bool top, bool bottom, bool front, bool back)
 {
@@ -267,6 +277,15 @@ void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockTy
 		{ 0, 0, -1 }
 	};
 
+	static const float tangents[6][3] = {
+		{  0, 0,  1 },
+		{  0, 0, -1 },
+		{  1, 0,  0 },
+		{  1, 0,  0 },
+		{  1, 0,  0 },
+		{ -1, 0,  0 }
+	};
+
 	bool faces[] = { left, right, top, bottom, front, back };
 
 	// 遍历方块的6个面
@@ -289,6 +308,10 @@ void Chunk::genCubeBuffer(std::vector<float>& data, int x, int y, int z, BlockTy
 			data.push_back(position[i][v][4]);
 			// w
 			data.push_back(ETextureType::blockTextures[w][i]);
+			// tangents
+			data.push_back(tangents[i][0]);
+			data.push_back(tangents[i][1]);
+			data.push_back(tangents[i][2]);
 		}
 	}
 }

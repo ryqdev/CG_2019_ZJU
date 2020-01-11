@@ -16,7 +16,6 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="robot.cpp" />
-    <ClCompile Include="chunk\chunkManager.cpp" />
     <ClCompile Include="cubeRender.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -39,7 +38,6 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="robot.h" />
-    <ClInclude Include="chunk\chunkManager.h" />
     <ClInclude Include="cubeRender.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="Sphere.h" />

@@ -15,12 +15,10 @@ private:
 	GLuint wireCubeVao, wireCubeVbo;
 
 public:
-
-	CubeRender();
 	CubeRender(Shader& lineShader);
 
-	// ≈‰÷√ VAO ”Î VBO 
+	// ÈÖçÁΩÆ VAO ‰∏é VBO 
 	void initRenderData();
 
-	void drawWireCube(int x, int y, int z, glm::mat4 matrix);
+	void drawWireCube(glm::mat4 matrix);
 };

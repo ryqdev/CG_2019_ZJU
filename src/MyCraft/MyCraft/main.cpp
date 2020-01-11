@@ -1,4 +1,4 @@
-﻿// 让 fopen 不会报错,或者向 C/C++, 预处理器，预处理器定义中 添加 _CRT_SECURE_NO_WARNINGS
+// 让 fopen 不会报错,或者向 C/C++, 预处理器，预处理器定义中 添加 _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 
 #define GLEW_STATIC
@@ -14,7 +14,7 @@ struct tm* ptminfo;
 // The Width of the screen
 const GLuint SCREEN_WIDTH = 1024;
 // The height of the screen
-const GLuint SCREEN_HEIGHT = 960;
+const GLuint SCREEN_HEIGHT = 640;
 
 Game MineCraft(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -43,14 +43,14 @@ void idle()
 void timer(int extra)
 {
 	// 处理用户的输入
-	//MineCraft.ProcessInput(0.01);
-	//// 更新游戏
-	//MineCraft.Update(0.01);
+	MineCraft.ProcessInput(0.01);
+	// 更新游戏
+	MineCraft.Update(0.01);
 
-	//// 重绘画面
-	//glutPostRedisplay();
-	//// 每 5ms 调用一次该函数， 主要用于控制帧率fps
-	//glutTimerFunc(5, timer, 0);
+	// 重绘画面
+	glutPostRedisplay();
+	// 每 5ms 调用一次该函数， 主要用于控制帧率fps
+	glutTimerFunc(5, timer, 0);
 }
 
 void getFPS()
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	glutInitWindowPosition(100, 100);
+	glutInitWindowPosition(50, 50);
 	glutCreateWindow("Minecraft");
 	glutSetCursor(GLUT_CURSOR_NONE);
 
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
 	glutKeyboardUpFunc(keyUp);
 	glutPassiveMotionFunc(mouse_move_callback);
 	glutMouseFunc(mouse_click_callback);
-	glutIdleFunc(idle);
+	//glutIdleFunc(idle);
 	glutMainLoop();
 	return 0;
 }

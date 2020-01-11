@@ -2,10 +2,6 @@
 #include "resource_manager.h"
 #include <iostream>
 
-CubeRender::CubeRender()
-{
-}
-
 CubeRender::CubeRender(Shader& lineShader)
 {
 	this->lineShader = lineShader;
@@ -39,7 +35,7 @@ void CubeRender::initRenderData()
 		data[i*3+2] = vertices[indices[i]][2]*0.6;
 	}
 
-	// vaoÓëvbo
+	// vaoä¸vbo
 	glGenVertexArrays(1, &wireCubeVao);
 	glBindVertexArray(wireCubeVao);
 
@@ -56,19 +52,16 @@ void CubeRender::initRenderData()
 	glBindVertexArray(0);
 }
 
-void CubeRender::drawWireCube(int x, int y, int z, glm::mat4 matrix)
+void CubeRender::drawWireCube(glm::mat4 matrix)
 {
-	glm::mat4 model;
-	model = glm::translate(model, glm::vec3(0.5f * x, 0.5f * y, 0.5f * z)); 
-
 	lineShader.Use();
-	lineShader.SetMatrix4("matrix", model*matrix, false);
+	lineShader.SetMatrix4("matrix", matrix, false);
 
 	glBindVertexArray(wireCubeVao);
 	glDrawArrays(GL_LINES, 0, 24);
 	glBindVertexArray(0);
 
-	// ×¢ÒâÕâÀïÒª»¹Ô­³É GL_FILL, ±£Ö¤¶à±ßĞÎ»æÖÆÄ£Ê½ÊÇ GL_FILL
-	// ·ñÔòÌì¿ÕºĞ»áÓĞÎÊÌâ, ´ı½â¾ö
+	// æ³¨æ„è¿™é‡Œè¦è¿˜åŸæˆ GL_FILL, ä¿è¯å¤šè¾¹å½¢ç»˜åˆ¶æ¨¡å¼æ˜¯ GL_FILL
+	// å¦åˆ™å¤©ç©ºç›’ä¼šæœ‰é—®é¢˜, å¾…è§£å†³
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

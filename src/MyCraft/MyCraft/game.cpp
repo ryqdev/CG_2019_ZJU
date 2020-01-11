@@ -1,4 +1,4 @@
-﻿#include "game.h"
+#include "game.h"
 #include "resource_manager.h"
 
 Game::Game(GLuint width, GLuint height)
@@ -40,10 +40,18 @@ void Game::Init()
 {
 	// 纹理数组
 	vector<const GLchar*> files;
-	files.push_back("textures/grass_block_up.png");
-	files.push_back("textures/grass_block_side.png");
+	files.push_back("textures/grass_top.png");
+	files.push_back("textures/grass_top_s.png");
+	files.push_back("textures/grass_top_n.png");
+	files.push_back("textures/grass_side.png");
+	files.push_back("textures/grass_side_s.png");
+	files.push_back("textures/grass_side_n.png");
 	files.push_back("textures/ice.png");
+	files.push_back("textures/ice_s.png");
+	files.push_back("textures/ice_n.png");
 	files.push_back("textures/gold_ore.png");
+	files.push_back("textures/gold_ore_s.png");
+	files.push_back("textures/gold_ore_n.png");
 	ResourceManager::LoadTextureArray(files, false, "blocks");
 
 	//装载树木纹理

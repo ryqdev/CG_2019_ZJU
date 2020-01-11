@@ -345,3 +345,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /MyCraft/include/glm/out/build/x64-Debug
+/src/MyCraft/MyCraft/save
