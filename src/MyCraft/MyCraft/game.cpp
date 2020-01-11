@@ -32,7 +32,7 @@ Game::~Game()
 void Game::nextBlcokType()
 {
 	this->currentType = (BlockType)((this->currentType + 1) % BlockTypeNum);
-	cout << this->currentType << endl;
+	//cout << this->currentType << endl;
 }
 
 
@@ -84,6 +84,7 @@ void Game::Init()
 	// this->mousePicker = new MousePicker(this->camera, glm::make_mat4(projectionMatrix));
 	this->mousePicker = new MousePicker(this->camera, glm::perspective(65.0f, (float)Width / Height, 0.125f, 100.0f));
 
+	currentType = GRASS;
 }
 
 void Game::ProcessInput(GLfloat dt)
@@ -249,4 +250,17 @@ void Game::render_cross()
 	glMatrixMode(GL_MODELVIEW);   // 选择Modelview矩阵
 	glPopMatrix();                // 重置为原保存矩阵
 	glEnable(GL_DEPTH_TEST);
+}
+
+void Game::ReDrawCube()
+{
+	for (int i = 0; i < file.vx.size(); i++) {
+		int ix = file.vx[i], iy = file.vy[i], iz = file.vz[i];
+		switch (file.vtype[i]) {
+		case -1:world->remove_block(ix, iy, iz); break;
+		case 0:world->put_block(ix, iy, iz, GRASS); break;
+		case 1:world->put_block(ix, iy, iz, ICE); break;
+		case 2:world->put_block(ix, iy, iz, GOLD); break;
+		}
+	}
 }
