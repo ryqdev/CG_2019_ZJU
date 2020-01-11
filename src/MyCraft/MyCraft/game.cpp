@@ -72,8 +72,6 @@ void Game::Init()
 
 	// 新建一个 world 对象
 	this->world = new World();
-	// 载入世界资源
-	this->world->Load();
 	// 初始化世界
 	this->world->init();
 

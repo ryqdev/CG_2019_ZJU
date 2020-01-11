@@ -43,7 +43,7 @@ void idle()
 void timer(int extra)
 {
 	// 处理用户的输入
-	MineCraft.ProcessInput(0.01);
+	MineCraft.ProcessInput(0.05);
 	// 更新游戏
 	MineCraft.Update(0.01);
 

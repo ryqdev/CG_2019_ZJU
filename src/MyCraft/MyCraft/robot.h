@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #define N_ROBOT 10
 #include "GL/glew.h"
 #include "GL/glut.h"
@@ -46,5 +46,14 @@ public:
 	void DrawRobot(Shader s, Robot& robot);
 	void DrawBall();
 	void DrawRobot(Shader s, Robot& robot, Texture2D& tex0, Texture2D& tex1);
+	void drawRobots(Shader s);
 	RobotRender();
+
+private:
+	int robotVertexNum;
+	GLuint robotVao, robotVbo;
+	// 生成一个方块的绘制信息到data
+	void genCube(std::vector<float>& data, glm::vec3 color, 
+		glm::vec3 translate, glm::vec3 scale);
+	void genRobot();
 };

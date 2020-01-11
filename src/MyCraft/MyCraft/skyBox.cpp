@@ -29,9 +29,6 @@ void SkyBox::render()
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 	glDepthMask(GL_TRUE);
-
-	// 换成使用固定管线渲染
-	glUseProgram(0);
 }
 
 

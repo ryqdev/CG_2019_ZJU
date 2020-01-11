@@ -22,7 +22,7 @@ private:
 	glm::vec3 pickedBlock;
 
 	SkyBox skyBox;	// 天空盒对象
-	std::vector<Chunk*> chunks;
+	unordered_map<int, Chunk*> chunks;
 	Shader sence, chunkshader;
 
 	Texture2D trunk;
@@ -33,8 +33,6 @@ private:
 
 	int chunked(int x);
 	Chunk* findChunk(int x, int z);
-
-	void drawWireCube(int x, int y, int z, glm::mat4 matrix);// 绘制线框
 
 	//世界物体材质
 	float mAmbientMaterial[4], mDiffuseMaterial[4], mSpecularMaterial[4];
@@ -55,9 +53,6 @@ public:
 	void remove_block(int x, int y, int z);
 
 	int highest(int x, int z);
-
-	// 从文件中加载世界数据, 创建相应的方块对象
-	void Load();
 
 	// 初始化世界生成，准备着色器，纹理等
 	void init();

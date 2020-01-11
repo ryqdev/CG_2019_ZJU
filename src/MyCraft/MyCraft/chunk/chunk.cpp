@@ -129,20 +129,11 @@ int Chunk::highest(int x, int z)
 {
 	int highest = 0;
 
-	for (auto it = blocks.begin(); it != blocks.end(); it++) {
-		// 得到坐标
-		int key = it->first;
-		int iz = key % CHUNK_SIZE;
-		key /= CHUNK_SIZE;
-		int ix = key % CHUNK_SIZE;
-		int iy = key / CHUNK_SIZE;
-
-		if (ix == x && iz == z) {
-			highest = highest > iy ? highest : iy;
-		}
+	for (int y = 0; y < CHUNK_HEIGHT; y++) {
+		if (getBlock(x, y, z) == AIR)
+			return y > 1 ? y - 1 : 0;
 	}
-
-	return highest;
+	return CHUNK_HEIGHT;
 }
 
 // 获取指定位置的方块

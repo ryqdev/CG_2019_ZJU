@@ -1,4 +1,4 @@
-﻿#include "robot.h"
+#include "robot.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -582,6 +582,47 @@ void RobotRender::DrawRobot(Shader s, Robot& robot, Texture2D& tex0, Texture2D& 
 	rr = rr > 360 ? rr - 360 : rr;
 }
 
+void RobotRender::drawRobots(Shader s) 
+{
+	// 模型变换矩阵
+	glm::mat4 modelMatrices[N_ROBOT];
+	for (int i = 0; i < N_ROBOT; i++) {
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(robotList[i].x, robotList[i].y, robotList[i].z));
+		model = glm::rotate(model, robotList[i].vangle, glm::vec3(0, 1, 0));
+		model = glm::scale(model, glm::vec3(robotList[i].size, robotList[i].size, robotList[i].size));
+		modelMatrices[i] = model;
+	}
+
+	// 配置实例化数组
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, N_ROBOT * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	glBindVertexArray(robotVao);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2*sizeof(glm::vec4)));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3*sizeof(glm::vec4)));
+
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+
+	// 绘制
+	s.Use();
+	glDrawArraysInstanced(GL_TRIANGLES, 0, robotVertexNum, N_ROBOT);
+	glBindVertexArray(0);
+
+	glDeleteBuffers(1, &buffer);
+}
+
 RobotRender::RobotRender() {
 	for (int i = 0; i < N_ROBOT; i++) {
 		int x = rand() % 100;
@@ -591,4 +632,113 @@ RobotRender::RobotRender() {
 
 	initBuffer();//初始化机器人的vbo
 	//lid = createList();
+	genRobot();
+}
+
+// 生成一个方块的绘制信息到data
+void RobotRender::genCube(std::vector<float>& data, glm::vec3 color, glm::vec3 translate, glm::vec3 scale)
+{
+	static float positions[6][6][3] = {
+		// left
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f, 
+		-0.5f, -0.5f, -0.5f,
+
+		// right
+		0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+
+		// top
+		-0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		// bottom
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		// front
+		-0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+
+		// back
+		0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+	};
+
+	static float normals[6][3] = {
+		-1,  0,  0,
+		1,  0,  0,
+		0,  1,  0,
+		0, -1,  0,
+		0,  0,  1,
+		0,  0, -1
+	};
+
+	// 面
+	for (int i = 0; i < 6; i++) {
+		// 顶点
+		for (int j = 0; j < 6; j++) {
+			// 位置
+			data.push_back(positions[i][j][0] * scale.x + translate.x);
+			data.push_back(positions[i][j][1] * scale.y + translate.y);
+			data.push_back(positions[i][j][2] * scale.z + translate.z);
+			// 法线
+			data.push_back(normals[i][0]);
+			data.push_back(normals[i][1]);
+			data.push_back(normals[i][2]);
+			// 颜色
+			data.push_back(color.x);
+			data.push_back(color.y);
+			data.push_back(color.z);
+		}
+	}
+}
+
+void RobotRender::genRobot()
+{
+	std::vector<float> data;
+	// head
+	genCube(data, {128.0/255, 42.0/255, 42.0/255}, {0, 2.8, 0}, {0.7, 1, 1});
+	// body
+	genCube(data, {150.0/255, 110.0/255, 110.0/255}, {0, 1.3, 0}, {0.7, 2, 0.8});
+	// foot
+	genCube(data, {128.0/255, 42.0/255, 42.0/255}, {0, 0.15, 0}, {0.7, 0.3, 0.9});
+
+	glGenVertexArrays(1, &robotVao);
+	glBindVertexArray(robotVao);
+	glGenBuffers(1, &robotVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, robotVbo);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(6 * sizeof(float)));
+	glBindVertexArray(0);
+
+	robotVertexNum = data.size() / 9;
 }

@@ -10,6 +10,7 @@ glm::vec3 ambient, diffuse, specular;//材质的信息
 float shiness = 32.0f;//灯光的参数
 //glm::vec3 treepos[N_TREE];
 vector<glm::vec3> treepos;
+const int WORLD_HALF_SIZE = 5;
 World::World()
 {
 }
@@ -21,11 +22,12 @@ int World::chunked(int x)
 
 Chunk* World::findChunk(int x, int z)
 {
-	for (auto it = chunks.begin(); it != chunks.end(); it++) {
-		if ((*it)->X == x && (*it)->Z == z)
-			return (*it);
-	}
-	return nullptr;
+	int key = (x + WORLD_HALF_SIZE) * WORLD_HALF_SIZE * 2 + (z + WORLD_HALF_SIZE);
+	auto it = chunks.find(key);
+	if (it != chunks.end())
+		return it->second;
+	else
+		return nullptr;
 }
 
 World::~World()
@@ -85,20 +87,6 @@ int World::highest(int x, int z)
 	return c->highest(x - X * CHUNK_SIZE, z - Z * CHUNK_SIZE);
 }
 
-void World::Load()
-{
-	for (int i = -2; i <= 2; i++) {
-		for (int j = -2; j <= 2; j++) {
-			Chunk* chunk = new Chunk(i, j);
-			chunk->genChunk();
-			chunk->genBuffer();
-			chunks.push_back(chunk);
-		}
-	}
-
-	this->skyBox = SkyBox();
-}
-
 void World::init()
 {
 	// 初始化立方体渲染器
@@ -109,6 +97,7 @@ void World::init()
 	robotRender = new RobotRender();
 
 	// 初始化天空盒
+	skyBox = SkyBox();
 	skyBox.init(ResourceManager::GetShader("shader_skybox"));
 
 	sence = ResourceManager::GetShader("shader_sence");
@@ -122,25 +111,27 @@ void World::init()
 	chunkshader = ResourceManager::GetShader("shader_chunk");
 
 	// 初始化区块
-	const int CREATE_RADIUS = 5;
-	for (int i = -CREATE_RADIUS; i <= CREATE_RADIUS; i++) {
-		for (int j = -CREATE_RADIUS; j <= CREATE_RADIUS; j++) {
+	for (int i = -WORLD_HALF_SIZE; i < WORLD_HALF_SIZE; i++) {
+		for (int j = -WORLD_HALF_SIZE; j < WORLD_HALF_SIZE; j++) {
 			Chunk* c = findChunk(i, j);
 			// 如果指定位置不存在区块，则创建或载入一个区块
 			if (!c) {
 				c = new Chunk(i, j);
-				chunks.push_back(c);
+				c->genChunk();
+				c->genBuffer();
+				int key = (i + WORLD_HALF_SIZE) * WORLD_HALF_SIZE * 2 + (j + WORLD_HALF_SIZE);
+				chunks.insert(make_pair(key, c));
 			}
 		}
 	}
 
 	//初始化树
 	//树木位置
-	int mapSize = (CREATE_RADIUS * 2 + 1) * CHUNK_SIZE;
-	int treeNum = (CREATE_RADIUS * 2 + 1) * (CREATE_RADIUS * 2 + 1) * 4;
+	int mapSize = WORLD_HALF_SIZE * 2 * CHUNK_SIZE;
+	int treeNum = (WORLD_HALF_SIZE * 2) * (WORLD_HALF_SIZE * 2) * 2;
 	for (int i = 0; i < treeNum; i++) {
-		int x = mapSize/2 - rand() % mapSize;
-		int z = mapSize/2 - rand() % mapSize;
+		int x = rand() % mapSize - mapSize / 2;
+		int z = rand() % mapSize - mapSize / 2;
 		int y = highest(x, z);
 
 		// 假设树的碰撞体积为3个方块
@@ -170,14 +161,40 @@ void World::render(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos)
 	ra += 1;
 	if (ra > 360)
 		ra -= 360;
+
+	// 渲染区块
+	glEnable(GL_CULL_FACE);
+	chunkshader.Use();
+	chunkshader.SetMatrix4("project", projection);
+	chunkshader.SetMatrix4("view", view);
+	chunkshader.SetMatrix4("model", glm::mat4(1.0));
+	chunkshader.SetFloat("shiness", shiness);
+	chunkshader.SetVector3f("lightPos", lightpos);
+	chunkshader.SetVector3f("viewpos", cameraPos);
+	chunkshader.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
+	chunkshader.SetVector3f("light.diffuse", 0.6f, 0.6f, 0.6f);
+	chunkshader.SetVector3f("light.specular", 0.85f, 0.85f, 0.85f);
+	Texture2DArray textureArray = ResourceManager::GetTextureArray("blocks");
+	textureArray.Bind();
+
+	for (auto it : chunks) {
+		it.second->render();
+	}
+	glDisable(GL_CULL_FACE);
 	
-
+	for (int i = 0; i < N_ROBOT; i++) {
+		robotRender->robotList[i].randomMove();
+		float x = robotRender->robotList[i].x;
+		float z = robotRender->robotList[i].z;
+		robotRender->robotList[i].setLocation(x, highest(x+0.5, z+0.5)+0.5, z);
+	}
 	sence.Use();
-	//Shader r = ResourceManager::GetShader("shader_robot");
-	//r.Use();
-	//r.SetMatrix4("project", projection);
-	//r.SetMatrix4("view", view);
-
+	Shader r = ResourceManager::GetShader("shader_robot");
+	r.Use();
+	r.SetMatrix4("project", projection);
+	r.SetMatrix4("view", view);
+	robotRender->drawRobots(r);
+	/*
 	ambient = glm::vec3(0.7895, 0.8, 0.88);
 	diffuse = glm::vec3(0.2, 1, 0.5);
 	specular = glm::vec3(1, 1, 1);
@@ -186,11 +203,11 @@ void World::render(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos)
 	sence.SetVector3f("specular", specular);
 	
 	//渲染robot
-	/*for (int i = 0; i < N_ROBOT; i++) {
+	for (int i = 0; i < N_ROBOT; i++) {
 		robotRender->robotList[i].randomMove();
 		float x = robotRender->robotList[i].x;
 		float z = robotRender->robotList[i].z;
-		robotRender->robotList[i].setLocation(x, highest(x, z), z);
+		robotRender->robotList[i].setLocation(x, highest(x+0.5, z+0.5), z);
 		Robot robot = robotRender->robotList[i];
 
 		robotRender->DrawRobot(sence, robot, earth, moon);
@@ -211,28 +228,9 @@ void World::render(glm::mat4 projection, glm::mat4 view, glm::vec3 cameraPos)
 	//	glBindVertexArray(0);
 
 		//robotRender->DrawRobot(r, robotRender->robotList[i]);
-	}*/
-	glUseProgram(0);
-	glEnable(GL_CULL_FACE);
-
-	// 渲染区块
-	chunkshader.Use();
-	chunkshader.SetMatrix4("project", projection);
-	chunkshader.SetMatrix4("view", view);
-	chunkshader.SetMatrix4("model", glm::mat4(1.0));
-	chunkshader.SetFloat("shiness", shiness);
-	chunkshader.SetVector3f("lightPos", lightpos);
-	chunkshader.SetVector3f("viewpos", cameraPos);
-	chunkshader.SetVector3f("light.ambient", 0.2f, 0.2f, 0.2f);
-	chunkshader.SetVector3f("light.diffuse", 0.6f, 0.6f, 0.6f);
-	chunkshader.SetVector3f("light.specular", 0.85f, 0.85f, 0.85f);
-	Texture2DArray textureArray = ResourceManager::GetTextureArray("blocks");
-	textureArray.Bind();
-
-	for (Chunk *c : chunks) {
-		c->render();
 	}
-
+	
+	*/
 	//渲染树木 最多N_TREE数量树木
 	sence.Use();
 	sence.SetVector3f("lightcolor", light);
