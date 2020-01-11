@@ -89,6 +89,12 @@ For the sake of the correctness in README, Chinese will be used in the following
 * 为树木添加3个方块大小的碰撞体积
 * 解决选择线框无法显示的bug，现在所有可修改的方块均可以显示线框
 
+## 2020年1月12日更新
+
+* 完善存储功能，开始游戏前在控制台输入存档名，若已有该存档则打开旧存档，无存档则新建
+* 删除I键功能，U键在游戏中打开新存档或旧存档
+* 自动创建save、screenshot文件夹
+
 ## To-Do list
 * 基础要求
 - [x] 建模:基于OpenGL/WebGL，具有基本体素(立方体、球、圆柱、圆锥、多 面棱柱、多面棱台)的建模表达能力
