@@ -58,6 +58,8 @@ public:
 	// Джх╬сно╥
 	void Render();
 
+	void ReDrawCube();
+
 private:
 
 	void render_cross();

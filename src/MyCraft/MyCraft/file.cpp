@@ -9,25 +9,22 @@ void File::CreateFolder(string folderPath)
 
 }
 
+void File::CreatePath()
+{
+	if (!(bool)PathIsDirectory("save"))
+		CreateFolder("\"save\"");
+	//else
+	//	cout << "save Already Exists" << endl;
+	if (!(bool)PathIsDirectory("screenshot"))
+		CreateFolder("\"screenshot\"");
+	//else
+	//	cout << "screenshot Already Exists" << endl;
+}
+
 bool File::ExistTxt(string pathName)
 {
 	struct stat buffer;
 	return (stat(pathName.c_str(), &buffer) == 0);
-}
-
-void File::Init()
-{
-	outfile.close();
-	cout << "Enter your file's name: " << endl;
-	cin >> filename;
-	while (ExistTxt("save\\\\" + filename + ".txt")) {
-		cout << "File already exists" << endl;
-		cout << "Enter your file's name: " << endl;
-		cin >> filename;
-	}
-	cout << "Create a file successfully! " << endl;
-	CreateFolder("\"save\"");
-	outfile.open("save\\\\" + filename + ".txt");
 }
 
 void File::WriteCube(int x, int y, int z, BlockType type)
@@ -42,23 +39,33 @@ void File::RemoveCube(int x, int y, int z)
 	outfile << content << endl;
 }
 
+void File::Init()
+{
+	vx.clear();
+	vy.clear();
+	vz.clear();
+	vtype.clear();
+	CreatePath();
+	outfile.close();
+	cout << "Enter your file's name: " << endl;
+	cin >> filename;
+	if (ExistTxt("save\\\\" + filename + ".txt")) {//若文件已存在
+		ReadFile();
+	}
+	else {//若文件不存在，创建
+		bRead = false;
+		cout << "Create a file successfully! " << endl;
+		outfile.open("save\\\\" + filename + ".txt");
+	}
+}
+
 void File::ReadFile()
 {
-	string line;
-	fstream infile;
-
-	cout << "Enter your file's name: " << endl;
-	cin >> openfilename;
-	while (!ExistTxt("save\\\\" + openfilename + ".txt")) {
-		cout << "File not exists" << endl;
-		cout << "Enter your file's name: " << endl;
-		cin >> openfilename;
-	}
+	bRead = true;
 	cout << "Load file successfully! " << endl;
-	outfile.close();
-	outfile.open("save\\\\" + openfilename + ".txt", ios::app);
+	outfile.open("save\\\\" + filename + ".txt", ios::app);
 
-	infile.open("save\\\\" + openfilename + ".txt", ios::in);
+	infile.open("save\\\\" + filename + ".txt", ios::in);
 	if (!infile.is_open()) {
 		cout << "Something went wrong when opening files" << endl;
 	}

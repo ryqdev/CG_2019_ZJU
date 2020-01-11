@@ -126,25 +126,8 @@ void keyDown(unsigned char key, int x, int y)
 	if (key == 'u' || key == 'U') {
 		MineCraft.Init();
 		MineCraft.file.Init();
-	}
-	if (key == 'i' || key == 'I')
-	{
-		MineCraft.Init();
-		MineCraft.file.ReadFile();
-		for (int i = 0; i < MineCraft.file.vx.size(); i++) {
-			int ix = MineCraft.file.vx[i], iy = MineCraft.file.vy[i], iz = MineCraft.file.vz[i];
-			//if (MineCraft.file.vtype[i] == -1) {
-			//	MineCraft.world->remove_block(ix, iy, iz);
-			//}
-			//else {
-			//	MineCraft.world->put_block(ix, iy, iz, BlockType(i));
-			//}
-			switch (MineCraft.file.vtype[i]) {
-			case -1:MineCraft.world->remove_block(ix, iy, iz); break;
-			case 0:MineCraft.world->put_block(ix, iy, iz, GRASS); break;
-			case 1:MineCraft.world->put_block(ix, iy, iz, ICE); break;
-			case 2:MineCraft.world->put_block(ix, iy, iz, GOLD); break;
-			}
+		if (MineCraft.file.bRead) {	//若打开已有文件 绘制方块
+			MineCraft.ReDrawCube();
 		}
 	}
 }
@@ -169,6 +152,9 @@ void init()
 	MineCraft.file.Init();
 	glutTimerFunc(5, timer, 0);
 	//timer(0);
+	if (MineCraft.file.bRead) {	//若打开已有文件 绘制方块
+		MineCraft.ReDrawCube();
+	}
 }
 
 void mouse_move_callback(int xpos, int ypos)
