@@ -133,6 +133,7 @@ void Game::Update(GLfloat dt)
 static int block_last_x = 0;
 static int block_last_y = 0;
 static int block_last_z = 0;
+static bool picked = false;
 
 void Game::MouseMoveCallback(int xpos, int ypos)
 {
@@ -145,15 +146,15 @@ void Game::MouseMoveCallback(int xpos, int ypos)
 	// ---------------------------------------------------------
 	// TODO: 测试射线拾取
 	int distance = 8;			// 能够得着多远
-
+	bool isPicked = false;
 	glm::vec3 ray = this->mousePicker->getCurrentRay();
 	int x, y, z;
 	for (int u = 0; u < distance; u++) {
 		x = roundf(ray.x * u + camera->Position.x);
 		y = roundf(ray.y * u + camera->Position.y);
 		z = roundf(ray.z * u + camera->Position.z);
-		if (world->get_block(x, y, z) != AIR) {
-			if (block_last_x == x && block_last_y == y && block_last_z == z) {
+		if (Chunk::isBlock(world->get_block(x, y, z))) {
+			if (block_last_x == x && block_last_y == y && block_last_z == z && picked) {
 				// cout << "已经选中了"<< endl;
 			}
 			else {
@@ -162,9 +163,16 @@ void Game::MouseMoveCallback(int xpos, int ypos)
 				block_last_x = x;
 				block_last_y = y;
 				block_last_z = z;
+				picked = true;
 			}
+			isPicked = true;
 			break;
 		}
+	}
+	// 如果没有被选择的方块，则取消选择
+	if (!isPicked) {
+		world->unpick_block();
+		picked = false;
 	}
 	// --------------------------------------------
 }
@@ -192,7 +200,6 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 					&& pos.y - 0.3 < camera->Position.y + 0.3) {	// 要放的方块不能与人碰撞
 					return;
 				}
-				// cout << "放在了:" << pos.x << " " << pos.y << " " << pos.z << endl;
 				world->put_block(pos.x, pos.y, pos.z, currentType);
 				file.WriteCube(pos.x, pos.y, pos.z, currentType);
 			}
@@ -200,7 +207,7 @@ void Game::MouseClickCallback(int button, int state, int x, int y)
 	}
 	else if (button == GLUT_RIGHT_BUTTON) {		// 消除方块
 		if (state == GLUT_DOWN) {
-			if (world->get_block(block_last_x, block_last_y, block_last_z) != AIR) {
+			if (Chunk::isBlock(world->get_block(block_last_x, block_last_y, block_last_z))) {
 				world->remove_block(block_last_x, block_last_y, block_last_z);
 				file.RemoveCube(block_last_x, block_last_y, block_last_z);
 			}

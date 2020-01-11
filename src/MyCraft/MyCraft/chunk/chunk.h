@@ -34,6 +34,8 @@ public:
 
 	bool isLoaded() const;
 	bool isDirty() const;
+	// 判断是否为实体方块
+	static bool isBlock(BlockType type);
 
 private:
 	bool loaded = false;	// 用来判断方块是否已生成或载入
@@ -42,8 +44,6 @@ private:
 	GLuint vbo = 0;
 	std::unordered_map<int, BlockType> blocks;
 
-	// 判断是否为实体方块
-	bool isBlock(BlockType type);
 	// xyz为实际的xyz
 	void genCubeBuffer(std::vector<float> &data, int x, int y, int z, BlockType w, 
 		bool left, bool right, bool top, bool bottom, bool front, bool back);
