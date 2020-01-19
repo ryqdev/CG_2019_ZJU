@@ -136,3 +136,5 @@ For the sake of the correctness in README, Chinese will be used in the following
 | 2019.12.11课前课间 | 全体 | 讨论细节与可行性 |
 | 2019.12.11 - 12.18 | 全体 | 依据最新的分工，实现各自的功能 |
 |2019.12.18 - |全体|各自完成分配到的任务|
+
+# 任务已经完成，感谢所有成员的付出
