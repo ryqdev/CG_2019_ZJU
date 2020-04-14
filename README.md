@@ -21,6 +21,9 @@ For the sake of the correctness in README, Chinese will be used in the following
 - 在 VC++目录-库目录中添加 `$(ProjectDir)libs`
 - 在 链接器-输入-附加依赖项中添加 `opengl32.lib;SOIL.lib;glew32s.lib` (`opengl32.lib`一定要有)
 
+## how to start
+下载整个项目，在vs环境中运行工程文件
+
 ## 项目结构介绍
 
 - `main.cpp`: 创建了一个全局的游戏对象`Game MineCraft(SCREEN_WIDTH, SCREEN_HEIGHT);`, 在相应的 glut 响应函数中调用游戏对象中的逻辑。
@@ -119,12 +122,12 @@ For the sake of the correctness in README, Chinese will be used in the following
 
 
 # 成员
-商钰坤（组长）
-蒋博文
-梁家宁
-王道源
-徐贤民
-杨钰茹
+* 商钰坤（组长）
+* 蒋博文
+* 梁家宁
+* 王道源
+* 徐贤民
+* 杨钰茹
 
 
 # 时间表
